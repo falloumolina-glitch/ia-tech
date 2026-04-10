@@ -10,25 +10,46 @@ body{
   margin:0;
   font-family:Arial;
   background:#0b1220;
+  height:100vh;
   display:flex;
   flex-direction:column;
-  height:100vh;
 }
 
 /* HEADER */
-header{
+.topbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:12px 15px;
   background:#111827;
   color:white;
-  text-align:center;
-  padding:15px;
-  font-size:20px;
-  font-weight:bold;
+}
+
+.icon{font-size:22px;cursor:pointer}
+
+/* MENUS */
+.menu{
+  position:absolute;
+  top:55px;
+  width:220px;
+  background:#1f2937;
+  color:white;
+  padding:10px;
+  border-radius:12px;
+  display:none;
+  z-index:10;
+}
+
+.menu div{
+  padding:10px;
+  border-bottom:1px solid #333;
+  cursor:pointer;
 }
 
 /* CHAT */
 #chat{
   flex:1;
-  padding:10px;
+  padding:12px;
   overflow-y:auto;
   display:flex;
   flex-direction:column;
@@ -40,43 +61,69 @@ header{
   padding:12px;
   border-radius:15px;
   max-width:75%;
-  word-wrap:break-word;
+  animation:pop .15s ease;
 }
 
-.user{
-  background:#f4a261;
-  color:white;
-  align-self:flex-end;
+@keyframes pop{
+  from{transform:scale(.9);opacity:0}
+  to{transform:scale(1);opacity:1}
 }
 
-.bot{
-  background:#1f2937;
-  color:white;
-  align-self:flex-start;
+.user{background:#f4a261;color:white;align-self:flex-end}
+.bot{background:#1f2937;color:white;align-self:flex-start}
+
+/* INPUT AREA */
+.bottom{
+  display:flex;
+  align-items:center;
+  padding:10px;
+  background:#111827;
+  gap:8px;
 }
 
 /* INPUT */
-footer{
-  display:flex;
-  padding:10px;
-  background:#111827;
-}
-
 input{
   flex:1;
   padding:12px;
   border:none;
-  border-radius:10px;
+  border-radius:12px;
   outline:none;
 }
 
-button{
-  margin-left:10px;
-  padding:12px;
-  border:none;
-  border-radius:10px;
-  background:#f4a261;
+/* BUTTONS */
+.circle{
+  width:44px;
+  height:44px;
+  border-radius:50%;
+  background:#374151;
   color:white;
+  border:none;
+  font-size:18px;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.circle:hover{background:#4b5563}
+
+.send{background:#f4a261}
+
+/* + MENU */
+.plusMenu{
+  position:absolute;
+  bottom:70px;
+  left:10px;
+  background:#1f2937;
+  padding:10px;
+  border-radius:12px;
+  display:none;
+  z-index:20;
+}
+
+.plusMenu div{
+  padding:10px;
+  border-bottom:1px solid #333;
   cursor:pointer;
 }
 </style>
@@ -84,17 +131,73 @@ button{
 
 <body>
 
-<header>🤖 IA-Tech</header>
+<!-- TOP BAR -->
+<div class="topbar">
+  <div onclick="toggleLeft()" class="icon">☰</div>
+  <div>IA-Tech 🚀</div>
+  <div onclick="toggleRight()" class="icon">⋮</div>
+</div>
+
+<!-- LEFT MENU -->
+<div id="leftMenu" class="menu" style="left:10px;">
+  <div>➕ Nouveau projet</div>
+  <div>📚 Devoirs</div>
+</div>
+
+<!-- RIGHT MENU -->
+<div id="rightMenu" class="menu" style="right:10px;">
+  <div>👥 Partager</div>
+  <div>✏️ Renommer</div>
+  <div>📦 Archiver</div>
+  <div>🗑 Supprimer</div>
+</div>
+
+<!-- + MENU -->
+<div id="plusMenu" class="plusMenu">
+  <div>📷 Photo</div>
+  <div>📎 Document</div>
+  <div>🖼 Galerie</div>
+</div>
 
 <div id="chat"></div>
 
-<footer>
-<input id="input" placeholder="Écris ton message...">
-<button onclick="send()">Envoyer</button>
-</footer>
+<div class="bottom">
+
+  <button class="circle" onclick="togglePlus()">+</button>
+  <button class="circle" onclick="alert('🎤 Micro bientôt activé')">🎤</button>
+
+  <input id="input" placeholder="Écris ton message...">
+
+  <button class="circle send" onclick="send()">➤</button>
+
+</div>
 
 <script>
-function add(text, type){
+
+function toggleLeft(){
+  let m=document.getElementById("leftMenu");
+  m.style.display=(m.style.display==="block")?"none":"block";
+}
+
+function toggleRight(){
+  let m=document.getElementById("rightMenu");
+  m.style.display=(m.style.display==="block")?"none":"block";
+}
+
+function togglePlus(){
+  let m=document.getElementById("plusMenu");
+  m.style.display=(m.style.display==="block")?"none":"block";
+}
+
+document.addEventListener("click",function(e){
+  if(!e.target.closest(".menu") && !e.target.closest(".icon") && !e.target.closest(".circle")){
+    document.getElementById("leftMenu").style.display="none";
+    document.getElementById("rightMenu").style.display="none";
+    document.getElementById("plusMenu").style.display="none";
+  }
+});
+
+function add(text,type){
   let div=document.createElement("div");
   div.classList.add("msg",type);
   div.innerText=text;
@@ -109,18 +212,22 @@ function send(){
 
   add(text,"user");
 
-  let response="Je suis IA-Tech 🤖.";
+  let res="IA-Tech 🤖";
 
   if(text.toLowerCase().includes("bonjour")){
-    response="Salut 👋 comment puis-je t’aider ?";
+    res="Salut 👋 bienvenue dans ton IA.";
+  }
+  else if(text.toLowerCase().includes("devoir")){
+    res="Envoie ton sujet 📚.";
   }
   else if(text.toLowerCase().includes("dissertation")){
-    response="Une dissertation est un texte structuré : introduction, développement et conclusion.";
+    res="Introduction + développement + conclusion.";
   }
 
-  add(response,"bot");
+  add(res,"bot");
   input.value="";
 }
+
 </script>
 
 </body>
