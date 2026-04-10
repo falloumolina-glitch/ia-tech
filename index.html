@@ -3,17 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>IA-Tech</title>
+<title id="title">IA-Tech</title>
 
 <style>
 body{
   margin:0;
   font-family:system-ui;
-  background:#ffffff;
+  background:#fff;
   height:100vh;
   display:flex;
   flex-direction:column;
-  color:#111;
 }
 
 /* HEADER */
@@ -23,11 +22,11 @@ header{
   align-items:center;
   padding:12px 16px;
   border-bottom:1px solid #eee;
-  background:white;
 }
 
+/* BUTTON */
 .icon-btn{
-  font-size:20px;
+  font-size:22px;
   border:none;
   background:none;
   cursor:pointer;
@@ -40,11 +39,10 @@ header{
   background:white;
   border:1px solid #eee;
   border-radius:12px;
-  box-shadow:0 10px 25px rgba(0,0,0,0.08);
   display:none;
   flex-direction:column;
   width:220px;
-  z-index:100;
+  z-index:999;
 }
 
 .menu button{
@@ -55,9 +53,7 @@ header{
   cursor:pointer;
 }
 
-.menu button:hover{
-  background:#f5f5f5;
-}
+.menu button:hover{ background:#f3f4f6; }
 
 /* CHAT */
 #chat{
@@ -66,85 +62,54 @@ header{
   padding:20px;
   display:flex;
   flex-direction:column;
-  gap:14px;
+  gap:12px;
 }
 
-/* MESSAGES STYLE CHATGPT */
 .msg{
-  max-width:80%;
-  padding:14px 16px;
-  border-radius:18px;
-  font-size:15px;
-  line-height:1.5;
+  max-width:75%;
+  padding:12px;
+  border-radius:14px;
 }
 
-.user{
-  background:#f4f4f5;
-  align-self:flex-end;
-}
+.user{background:#e5e7eb; align-self:flex-end;}
+.bot{background:#f9fafb; border:1px solid #eee;}
 
-.bot{
-  background:white;
-  border:1px solid #eee;
-  align-self:flex-start;
-}
-
-/* TYPING */
-.typing{
-  font-size:14px;
-  opacity:0.6;
-}
-
-/* IMAGE */
-img{
-  max-width:180px;
-  border-radius:12px;
-}
-
-/* BOTTOM */
+/* INPUT */
 .bottom{
   padding:12px;
   border-top:1px solid #eee;
-  background:white;
 }
 
-/* INPUT BAR STYLE CHATGPT */
-.input-container{
+.input-box{
   display:flex;
-  align-items:center;
   gap:8px;
-  background:#f4f4f5;
+  background:#f3f4f6;
   border-radius:30px;
-  padding:10px 12px;
-  border:1px solid #e5e5e5;
+  padding:10px;
 }
 
 .plus{
-  width:36px;
-  height:36px;
+  width:44px;
+  height:44px;
   border-radius:50%;
   border:none;
   background:white;
-  cursor:pointer;
+  font-size:20px;
 }
 
 input{
   flex:1;
   border:none;
-  outline:none;
   background:transparent;
-  font-size:15px;
 }
 
-/* BUTTONS */
 .send{
-  width:34px;
-  height:34px;
-  border-radius:50%;
   background:black;
   color:white;
   border:none;
-  cursor:pointer;
+  border-radius:50%;
+  width:36px;
+  height:36px;
 }
 </style>
 </head>
@@ -152,35 +117,35 @@ input{
 <body>
 
 <header>
-  <button class="icon-btn" onclick="toggleMenu('leftMenu')">☰</button>
-  <b>IA-Tech</b>
-  <button class="icon-btn" onclick="toggleMenu('rightMenu')">⋮</button>
+  <button class="icon-btn" onclick="toggleMenu(event,'leftMenu')">☰</button>
+  <b id="chatTitle">IA-Tech</b>
+  <button class="icon-btn" onclick="toggleMenu(event,'rightMenu')">⋮</button>
 </header>
 
-<!-- MENUS -->
+<!-- LEFT MENU -->
 <div class="menu" id="leftMenu">
-  <button>Nouveau projet</button>
-  <button>Devoirs</button>
+  <button onclick="newChat()">🆕 Nouveau projet</button>
+  <button onclick="add('📚 Mode devoir activé','bot')">📚 Devoirs</button>
 </div>
 
+<!-- RIGHT MENU -->
 <div class="menu" id="rightMenu">
-  <button>Renommer</button>
-  <button>Archiver</button>
-  <button>Partager</button>
-  <button>Participants</button>
-  <button>Épingler</button>
-  <button>Écran accueil</button>
+  <button onclick="renameChat()">✏️ Renommer</button>
+  <button onclick="add('📦 Chat archivé','bot')">Archiver</button>
+  <button onclick="shareChat()">🔗 Partager</button>
+  <button onclick="add('👥 Ajouter participants','bot')">Participants</button>
+  <button onclick="add('📌 Chat épinglé','bot')">Épingler</button>
+  <button onclick="add('📱 Ajout écran accueil','bot')">Écran accueil</button>
 </div>
 
 <div id="chat"></div>
 
 <div class="bottom">
+  <div class="input-box">
 
-  <div class="input-container">
+    <button class="plus" onclick="toggleMenu(event,'plusMenu')">+</button>
 
-    <button class="plus" onclick="toggleMenu('plusMenu')">+</button>
-
-    <input id="input" placeholder="Message IA-Tech...">
+    <input id="input" placeholder="Message...">
 
     <button onclick="startVoice()">🎙</button>
 
@@ -189,109 +154,98 @@ input{
   </div>
 
   <div class="menu" id="plusMenu">
-    <button onclick="openPhoto()">Photo</button>
-    <button onclick="openCamera()">Caméra</button>
-    <button onclick="openFile()">Fichier</button>
+    <button onclick="photo()">📷 Photo</button>
+    <button onclick="camera()">📸 Caméra</button>
+    <button onclick="file()">📄 Fichier</button>
   </div>
-
 </div>
 
-<!-- FILE INPUT -->
 <input type="file" id="photoInput" accept="image/*" hidden onchange="handleFile(this)">
-<input type="file" id="cameraInput" accept="image/*" capture="environment" hidden onchange="handleFile(this)">
+<input type="file" id="cameraInput" accept="image/*" capture hidden onchange="handleFile(this)">
 <input type="file" id="fileInput" hidden onchange="handleFile(this)">
 
 <script>
 
-function toggleMenu(id){
+function toggleMenu(e,id){
+  e.stopPropagation();
   document.querySelectorAll(".menu").forEach(m=>{
     if(m.id !== id) m.style.display="none";
   });
-
   let menu=document.getElementById(id);
   menu.style.display = (menu.style.display==="flex")?"none":"flex";
 }
 
-document.addEventListener("click",(e)=>{
-  if(!e.target.closest(".menu") && !e.target.classList.contains("icon-btn") && !e.target.classList.contains("plus")){
-    document.querySelectorAll(".menu").forEach(m=>m.style.display="none");
-  }
+document.addEventListener("click",()=>{
+  document.querySelectorAll(".menu").forEach(m=>m.style.display="none");
 });
 
+/* CHAT */
 function add(text,type){
   let div=document.createElement("div");
   div.className="msg "+type;
   div.innerText=text;
   chat.appendChild(div);
-  chat.scrollTop=chat.scrollHeight;
-}
-
-function typing(){
-  let div=document.createElement("div");
-  div.className="msg bot typing";
-  div.id="typing";
-  div.innerText="IA écrit...";
-  chat.appendChild(div);
-}
-
-function removeTyping(){
-  let t=document.getElementById("typing");
-  if(t) t.remove();
 }
 
 function send(){
-  let input=document.getElementById("input");
   let text=input.value.trim();
   if(!text) return;
-
   add(text,"user");
   input.value="";
+  setTimeout(()=>add("Réponse IA 🤖","bot"),500);
+}
 
-  typing();
+/* ACTIONS */
+function newChat(){
+  chat.innerHTML="";
+}
 
-  setTimeout(()=>{
-    removeTyping();
-    add("Réponse IA 🤖","bot");
-  },1000);
+function renameChat(){
+  let name=prompt("Nouveau nom ?");
+  if(name) document.getElementById("chatTitle").innerText=name;
+}
+
+function shareChat(){
+  navigator.clipboard.writeText(window.location.href);
+  alert("Lien copié !");
 }
 
 /* MICRO */
 function startVoice(){
-  let SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if(!SpeechRecognition) return alert("Micro non supporté");
-
-  let r=new SpeechRecognition();
+  let SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR) return alert("Non supporté");
+  let r=new SR();
   r.lang="fr-FR";
   r.start();
-
-  r.onresult=(e)=>{
-    document.getElementById("input").value=e.results[0][0].transcript;
+  r.onresult=e=>{
+    input.value=e.results[0][0].transcript;
     send();
   };
 }
 
 /* FILE */
-function openPhoto(){ photoInput.click(); }
-function openCamera(){ cameraInput.click(); }
-function openFile(){ fileInput.click(); }
+function photo(){ photoInput.click(); }
+function camera(){ cameraInput.click(); }
+function file(){ fileInput.click(); }
 
 function handleFile(input){
-  let file=input.files[0];
-  if(!file) return;
+  let f=input.files[0];
+  if(!f) return;
 
-  if(file.type.startsWith("image/")){
+  if(f.type.startsWith("image/")){
     let div=document.createElement("div");
     div.className="msg user";
     let img=document.createElement("img");
-    img.src=URL.createObjectURL(file);
+    img.src=URL.createObjectURL(f);
+    img.style.maxWidth="150px";
     div.appendChild(img);
     chat.appendChild(div);
   }else{
-    add("📄 "+file.name,"user");
+    add("📄 "+f.name,"user");
   }
 }
 
 </script>
 
 </body>
-  </html>
+</html>
