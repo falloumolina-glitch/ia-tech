@@ -2,75 +2,124 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>IA-Tech</title>
+
 <style>
-body {
-  font-family: Arial;
-  background: #0f172a;
-  color: white;
-  text-align: center;
-  margin: 0;
+body{
+  margin:0;
+  font-family:Arial;
+  background:#0b1220;
+  display:flex;
+  flex-direction:column;
+  height:100vh;
 }
 
-h1 {
-  margin-top: 20px;
+/* HEADER */
+header{
+  background:#111827;
+  color:white;
+  text-align:center;
+  padding:15px;
+  font-size:20px;
+  font-weight:bold;
 }
 
-#chat {
-  background: white;
-  color: black;
-  width: 90%;
-  max-width: 400px;
-  margin: 20px auto;
-  padding: 10px;
-  border-radius: 10px;
-  height: 350px;
-  overflow-y: auto;
+/* CHAT */
+#chat{
+  flex:1;
+  padding:10px;
+  overflow-y:auto;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
 }
 
-input {
-  width: 65%;
-  padding: 10px;
+/* MESSAGE */
+.msg{
+  padding:12px;
+  border-radius:15px;
+  max-width:75%;
+  word-wrap:break-word;
 }
 
-button {
-  padding: 10px;
-  background: #f4a261;
-  border: none;
-  color: white;
-  border-radius: 5px;
-  cursor: pointer;
+.user{
+  background:#f4a261;
+  color:white;
+  align-self:flex-end;
+}
+
+.bot{
+  background:#1f2937;
+  color:white;
+  align-self:flex-start;
+}
+
+/* INPUT */
+footer{
+  display:flex;
+  padding:10px;
+  background:#111827;
+}
+
+input{
+  flex:1;
+  padding:12px;
+  border:none;
+  border-radius:10px;
+  outline:none;
+}
+
+button{
+  margin-left:10px;
+  padding:12px;
+  border:none;
+  border-radius:10px;
+  background:#f4a261;
+  color:white;
+  cursor:pointer;
 }
 </style>
 </head>
 
 <body>
 
-<h1>🤖 IA-Tech</h1>
+<header>🤖 IA-Tech</header>
 
 <div id="chat"></div>
 
-<input id="userInput" placeholder="Écris ton message...">
+<footer>
+<input id="input" placeholder="Écris ton message...">
 <button onclick="send()">Envoyer</button>
+</footer>
 
 <script>
-function send() {
-  let input = document.getElementById("userInput").value;
-  let chat = document.getElementById("chat");
+function add(text, type){
+  let div=document.createElement("div");
+  div.classList.add("msg",type);
+  div.innerText=text;
+  document.getElementById("chat").appendChild(div);
+  document.getElementById("chat").scrollTop=999999;
+}
 
-  if(input.trim() === "") return;
+function send(){
+  let input=document.getElementById("input");
+  let text=input.value;
+  if(text.trim()=="") return;
 
-  chat.innerHTML += "<p><b>Toi :</b> " + input + "</p>";
+  add(text,"user");
 
-  let response = "Je suis IA-Tech 🤖.";
+  let response="Je suis IA-Tech 🤖.";
 
-  if(input.toLowerCase().includes("bonjour")) {
-    response = "Salut 👋 comment puis-je t’aider ?";
+  if(text.toLowerCase().includes("bonjour")){
+    response="Salut 👋 comment puis-je t’aider ?";
+  }
+  else if(text.toLowerCase().includes("dissertation")){
+    response="Une dissertation est un texte structuré : introduction, développement et conclusion.";
   }
 
-  chat.innerHTML += "<p><b>IA :</b> " + response + "</p>";
-
-  document.getElementById("userInput").value = "";
+  add(response,"bot");
+  input.value="";
 }
 </script>
 
