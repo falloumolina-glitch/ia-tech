@@ -50,7 +50,6 @@ header{
   transform:translate(-50%,-50%);
   color:#777;
   text-align:center;
-  width:80%;
 }
 
 .bottom{
@@ -73,15 +72,6 @@ input{
   border:none;
   outline:none;
   background:transparent;
-}
-
-.plus{
-  width:42px;
-  height:42px;
-  border-radius:50%;
-  border:none;
-  background:white;
-  font-size:20px;
 }
 
 .send{
@@ -127,8 +117,8 @@ img{
 </header>
 
 <div class="menu" id="left">
-  <button onclick="newChat()">Nouveau projet</button>
-  <button onclick="alert('Devoirs activés')">Devoirs</button>
+  <button onclick="newChat()">Nouveau chat</button>
+  <button onclick="alert('Devoirs')">Devoirs</button>
 </div>
 
 <div class="menu" id="right">
@@ -143,8 +133,6 @@ img{
 <div class="bottom">
   <div class="bar">
 
-    <button class="plus" onclick="toggle('plusMenu')">+</button>
-
     <input id="input" placeholder="Message...">
 
     <button onclick="voice()">🎙</button>
@@ -152,74 +140,48 @@ img{
     <button class="send" onclick="send()">➤</button>
 
   </div>
-
-  <div class="menu" id="plusMenu">
-    <button onclick="document.getElementById('photo').click()">Photo</button>
-    <button onclick="document.getElementById('camera').click()">Caméra</button>
-    <button onclick="document.getElementById('file').click()">Fichier</button>
-  </div>
 </div>
-
-<input type="file" id="photo" accept="image/*" hidden onchange="handleFile(this)">
-<input type="file" id="camera" accept="image/*" capture="environment" hidden onchange="handleFile(this)">
-<input type="file" id="file" hidden onchange="handleFile(this)">
 
 <script>
 
-/* =========================
-   MÉMOIRE
-========================= */
+let chat = document.getElementById("chat");
+let input = document.getElementById("input");
+let title = document.getElementById("title");
+
 let memory = {lastUser:"",lastBot:"",topic:""};
 
 /* =========================
-   NORMALISATION
+   BASE DE CONNAISSANCES
 ========================= */
-function normalize(t){
-  return t.toLowerCase()
-  .normalize("NFD").replace(/[\u0300-\u036f]/g,"");
-}
+
+let DB = [
+{keys:["bonjour","salut","hello","hey"],answer:"Bonjour 👋"},
+{keys:["ça va","ca va","comment ça va"],answer:"Oui ça va bien 😊 et toi ?"},
+{keys:["merci"],answer:"Avec plaisir 😊"},
+{keys:["qui es tu"],answer:"Je suis IA-Tech 🤖"},
+{keys:["au revoir","bye"],answer:"Au revoir 👋"},
+{keys:["heure"],answer:"Il est " + new Date().toLocaleTimeString()}
+];
 
 /* =========================
-   BASE DE CONNAISSANCES ULTRA
+   CHARGEMENT GITHUB
 ========================= */
 
-const DB = [
-{keys:["france","paris"],answer:"France 🇫🇷 capitale Paris."},
-{keys:["senegal","dakar"],answer:"Sénégal 🇸🇳 capitale Dakar."},
-{keys:["terre","planete"],answer:"La Terre 🌍 est notre planète."},
-{keys:["soleil"],answer:"Le Soleil ☀️ est une étoile."},
-{keys:["lune"],answer:"La Lune 🌙 est un satellite naturel."},
-{keys:["ia","intelligence artificielle"],answer:"IA 🤖 technologie intelligente."},
-{keys:["internet","web"],answer:"Internet 🌐 réseau mondial."},
-{keys:["ordinateur"],answer:"Ordinateur 💻 machine de calcul."},
-{keys:["gravite"],answer:"La gravité 🌍 attire les objets."},
-{keys:["eau"],answer:"L’eau 💧 est essentielle à la vie."},
-{keys:["football","foot"],answer:"Football ⚽ sport mondial."},
-{keys:["basket"],answer:"Basketball 🏀 sport populaire."},
-{keys:["math","calcul"],answer:"Les maths servent à calculer ➗."},
-{keys:["univers"],answer:"L’univers est tout ce qui existe ♾️."},
-{keys:["galaxie"],answer:"Une galaxie est un ensemble d’étoiles 🌌."},
-{keys:["atome"],answer:"Un atome est la plus petite matière ⚛️."},
-{keys:["cellule"],answer:"La cellule est l’unité du vivant 🧫."},
-{keys:["virus"],answer:"Un virus peut causer des maladies 🦠."},
-{keys:["argent"],answer:"L’argent est un moyen d’échange 💵."},
-{keys:["loi"],answer:"Une loi est une règle officielle 📜."},
-{keys:["climat"],answer:"Le climat décrit le temps sur long terme 🌦️."}
-];
 fetch("https://raw.githubusercontent.com/falloumolina-glitch/ia-tech/main/db.json")
   .then(r => r.json())
   .then(data => {
     DB = DB.concat(data);
-    console.log("DB GitHub ajoutée ✅");
+    console.log("DB chargée ✅");
   });
-  let DB = [];
 
-fetch("https://raw.githubusercontent.com/falloumolina-glitch/ia-tech/main/db.json")
-  .then(r => r.json())
-  .then(data => {
-    DB = data;
-    console.log("DB chargée depuis GitHub ✅", DB);
-  });
+/* =========================
+   NORMALISATION
+========================= */
+
+function normalize(t){
+  return t.toLowerCase();
+}
+
 /* =========================
    CERVEAU IA
 ========================= */
@@ -230,7 +192,6 @@ let t = normalize(text);
 
 memory.lastUser = text;
 
-/* recherche */
 for(let item of DB){
 for(let k of item.keys){
 if(t.includes(k)){
@@ -241,34 +202,15 @@ return item.answer;
 }
 }
 
-/* chat */
-if(/bonjour|salut/.test(t))
-return "Bonjour 👋 je suis ton IA.";
-
-if(/comment ca va/.test(t))
-return "Je vais bien 👍";
-
-if(/qui es tu/.test(t))
-return "Je suis une IA hybride intelligente 🤖.";
-
-if(/merci/.test(t))
-return "Avec plaisir 😊";
-
 if(t.includes("heure"))
 return "Il est " + new Date().toLocaleTimeString();
 
-/* calcul */
 if(/[0-9]/.test(t) && /[+\-*/]/.test(t)){
 try{
 return "Résultat = " + eval(text.replace(/[^0-9+\-*/().]/g,''));
 }catch(e){}
 }
 
-/* continuité */
-if(/continue|et apres/.test(t))
-return "Je continue sur : " + (memory.topic || "aucun sujet");
-
-/* fallback */
 return "Je comprends 👍 mais je peux apprendre encore plus.";
 }
 
@@ -338,26 +280,6 @@ r.onresult=e=>{
 input.value=e.results[0][0].transcript;
 send();
 };
-}
-
-/* =========================
-   FILE
-========================= */
-
-function handleFile(input){
-let f=input.files[0];
-if(!f)return;
-
-if(f.type.startsWith("image/")){
-let d=document.createElement("div");
-d.className="msg user";
-let img=document.createElement("img");
-img.src=URL.createObjectURL(f);
-d.appendChild(img);
-chat.appendChild(d);
-}else{
-add("📄 "+f.name,"user");
-}
 }
 
 /* =========================
