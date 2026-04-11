@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>IA-Tech Ultra</title>
+<title>IA-Tech Stable</title>
 
 <style>
 body{
@@ -17,6 +17,7 @@ flex-direction:column;
 height:100vh;
 }
 
+/* HEADER */
 header{
 display:flex;
 justify-content:space-between;
@@ -35,6 +36,7 @@ font-size:18px;
 cursor:pointer;
 }
 
+/* CHAT */
 #chat{
 flex:1;
 overflow:auto;
@@ -43,6 +45,7 @@ display:flex;
 flex-direction:column;
 }
 
+/* MESSAGE */
 .msg{
 margin:5px 0;
 padding:8px;
@@ -53,6 +56,18 @@ max-width:75%;
 .user{background:#06b6d4;align-self:flex-end;}
 .bot{background:#1e293b;}
 
+/* CENTRAGE BIENVENUE */
+#welcome{
+position:absolute;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+opacity:0.7;
+text-align:center;
+font-size:15px;
+}
+
+/* INPUT */
 #inputBox{
 display:flex;
 padding:10px;
@@ -76,6 +91,7 @@ border-radius:10px;
 font-weight:bold;
 }
 
+/* MENUS */
 .menu{
 position:absolute;
 top:50px;
@@ -99,26 +115,31 @@ cursor:pointer;
 
 <header>
 <button onclick="toggleMenu('m1')">☰</button>
-<div id="title">IA-Tech Ultra</div>
+<div id="title">IA-Tech Stable</div>
 <div>
 <button onclick="newChat()">＋</button>
+<button onclick="voice()">🎤</button>
 <button onclick="toggleMenu('m2')">⋮</button>
 </div>
 </header>
 
-<div id="chat"></div>
+<div id="chat">
+<div id="welcome">Comment puis-je vous aider aujourd’hui ?</div>
+</div>
 
 <div id="inputBox">
-<input id="input" placeholder="Écris un message...">
+<input id="input" placeholder="Écris ou parle...">
 <button onclick="send()">➤</button>
 </div>
 
-<!-- MENUS -->
+<!-- MENU GAUCHE -->
 <div id="m1" class="menu">
-<div onclick="alert('Accueil')">Accueil</div>
-<div onclick="alert('Paramètres')">Paramètres</div>
+<div onclick="home()">Accueil</div>
+<div onclick="settings()">Paramètres</div>
+<div onclick="newChat()">Nouveau chat</div>
 </div>
 
+<!-- MENU DROITE -->
 <div id="m2" class="menu">
 <div onclick="rename()">Renommer</div>
 <div onclick="share()">Partager</div>
@@ -129,62 +150,36 @@ cursor:pointer;
 let chat=document.getElementById("chat");
 let input=document.getElementById("input");
 let title=document.getElementById("title");
+let welcome=document.getElementById("welcome");
 
-/* 🧠 MÉMOIRE UTILISATEUR */
-let memory = JSON.parse(localStorage.getItem("memory")) || {
-name:"",
-topic:""
-};
-
-/* 🧠 IA INTELLIGENTE */
+/* 🧠 IA AMÉLIORÉE */
 function brain(t){
 t=t.toLowerCase();
 
-/* mémoire */
-if(memory.name && t.includes("je m'appelle")){
-let name=t.split("je m'appelle")[1].trim();
-memory.name=name;
-saveMemory();
-return "Enchanté "+name+" 😊";
-}
+/* salutations */
+if(t.includes("bonjour")) return "Bonjour 👋 comment vas-tu ?";
+if(t.includes("salut")) return "Salut 😄 heureux de te voir !";
+if(t.includes("bonsoir")) return "Bonsoir 🌙 comment ça va ?";
+if(t.includes("ça va")) return "Oui très bien 😊 et toi ?";
+if(t.includes("comment vas tu")) return "Je vais très bien merci 😊";
+if(t.includes("merci")) return "Avec plaisir 😊";
+if(t.includes("cv")) return "CV = document qui décrit ton expérience 📄";
+if(t.includes("aide")) return "Je peux répondre, parler ou écouter 🎤";
 
-if(t.includes("bonjour")){
-return memory.name ? "Bonjour "+memory.name+" 👋" : "Bonjour 👋";
-}
-
-if(t.includes("ça va")){
-return "Oui très bien 😊 et toi ?";
-}
-
-if(t.includes("comment vas tu")){
-return "Je vais très bien merci 😊";
-}
-
-if(t.includes("cv")){
-return "CV = Curriculum Vitae 📄";
-}
-
-/* traduction simple */
-if(t.startsWith("traduire")){
-let word=t.replace("traduire","").trim();
-return word+" → (anglais) "+word;
-}
-
-if(t.includes("merci")){
-return "Avec plaisir 😊";
-}
-
-return "Je comprends 👍 mais j'apprends encore.";
+return "Je comprends 👍 mais j’apprends encore.";
 }
 
 /* ADD MESSAGE */
 function add(text,type){
+
+if(welcome) welcome.remove();
+
 let d=document.createElement("div");
 d.className="msg "+type;
 d.innerText=text;
+
 chat.appendChild(d);
 chat.scrollTop=chat.scrollHeight;
-saveChat();
 }
 
 /* SEND */
@@ -198,26 +193,44 @@ input.value="";
 setTimeout(()=>add(brain(t),"bot"),400);
 }
 
-/* SAVE CHAT */
-function saveChat(){
-localStorage.setItem("chat",chat.innerHTML);
+/* 🔥 VOIX */
+function voice(){
+let SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+if(!SpeechRecognition){
+alert("Voice non supporté");
+return;
 }
 
-/* LOAD CHAT */
-window.onload=function(){
-let c=localStorage.getItem("chat");
-if(c)chat.innerHTML=c;
-}
+let rec=new SpeechRecognition();
+rec.lang="fr-FR";
+rec.start();
 
-/* SAVE MEMORY */
-function saveMemory(){
-localStorage.setItem("memory",JSON.stringify(memory));
+rec.onresult=function(e){
+input.value=e.results[0][0].transcript;
+send();
+};
 }
 
 /* NEW CHAT */
 function newChat(){
-chat.innerHTML="";
-localStorage.removeItem("chat");
+chat.innerHTML=`<div id="welcome">Comment puis-je vous aider aujourd’hui ?</div>`;
+}
+
+/* MENUS */
+function toggleMenu(id){
+let m=document.getElementById(id);
+m.style.display=(m.style.display==="flex")?"none":"flex";
+}
+
+/* HOME */
+function home(){
+add("🏠 Retour à l'accueil","bot");
+}
+
+/* SETTINGS */
+function settings(){
+add("⚙️ Paramètres ouverts (version démo)","bot");
 }
 
 /* SHARE */
@@ -234,12 +247,6 @@ alert("Lien copié");
 function rename(){
 let n=prompt("Nom ?");
 if(n)title.innerText=n;
-}
-
-/* MENUS */
-function toggleMenu(id){
-let m=document.getElementById(id);
-m.style.display=(m.style.display==="flex")?"none":"flex";
 }
 
 /* CLICK OUTSIDE */
