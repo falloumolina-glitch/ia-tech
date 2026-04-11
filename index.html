@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>IA-Tech</title>
+<title>IA-Tech Hybrid</title>
 
 <style>
 body{
@@ -25,8 +25,6 @@ header{
   border-bottom:1px solid #eee;
 }
 
-button{cursor:pointer}
-
 /* CHAT */
 #chat{
   flex:1;
@@ -45,17 +43,16 @@ button{cursor:pointer}
 }
 
 .user{background:#e5e7eb; align-self:flex-end;}
-.bot{background:white; border:1px solid #eee; align-self:flex-start;}
+.bot{background:white;border:1px solid #eee;align-self:flex-start;}
 
-/* WELCOME CENTER */
+/* WELCOME */
 #welcome{
   position:absolute;
   top:50%;
   left:50%;
   transform:translate(-50%,-50%);
-  text-align:center;
   color:#777;
-  font-size:16px;
+  text-align:center;
   width:80%;
 }
 
@@ -68,8 +65,8 @@ button{cursor:pointer}
 
 .bar{
   display:flex;
-  align-items:center;
   gap:8px;
+  align-items:center;
   background:#f1f3f5;
   padding:10px;
   border-radius:25px;
@@ -82,10 +79,14 @@ input{
   background:transparent;
 }
 
+button{
+  cursor:pointer;
+}
+
 /* BUTTONS */
 .plus{
-  width:44px;
-  height:44px;
+  width:42px;
+  height:42px;
   border-radius:50%;
   border:none;
   background:white;
@@ -93,12 +94,12 @@ input{
 }
 
 .send{
-  width:36px;
-  height:36px;
+  width:38px;
+  height:38px;
   border-radius:50%;
+  border:none;
   background:black;
   color:white;
-  border:none;
 }
 
 /* MENU */
@@ -130,21 +131,20 @@ img{
 <body>
 
 <header>
-  <button onclick="toggle('leftMenu')">☰</button>
+  <button onclick="toggle('left')">☰</button>
   <b id="title">IA-Tech</b>
-  <button onclick="toggle('rightMenu')">⋮</button>
+  <button onclick="toggle('right')">⋮</button>
 </header>
 
 <!-- MENUS -->
-<div class="menu" id="leftMenu">
+<div class="menu" id="left">
   <button onclick="newChat()">Nouveau projet</button>
   <button onclick="add('Devoirs activés')">Devoirs</button>
 </div>
 
-<div class="menu" id="rightMenu">
+<div class="menu" id="right">
   <button onclick="rename()">Renommer</button>
   <button onclick="share()">Partager</button>
-  <button onclick="add('Chat archivé')">Archiver</button>
 </div>
 
 <div id="chat">
@@ -166,7 +166,6 @@ img{
 
   </div>
 
-  <!-- PLUS MENU -->
   <div class="menu" id="plusMenu">
     <button onclick="document.getElementById('photo').click()">Photo</button>
     <button onclick="document.getElementById('camera').click()">Caméra</button>
@@ -175,33 +174,55 @@ img{
 
 </div>
 
-<!-- FILE INPUT -->
+<!-- FILE INPUTS -->
 <input type="file" id="photo" accept="image/*" hidden onchange="handleFile(this)">
 <input type="file" id="camera" accept="image/*" capture="environment" hidden onchange="handleFile(this)">
 <input type="file" id="file" hidden onchange="handleFile(this)">
 
 <script>
 
-/* MENU SAFE */
-function toggle(id){
-  let el=document.getElementById(id);
+/* =========================
+   🧠 MÉMOIRE SIMPLE
+========================= */
+let memory = {
+  lastUser: "",
+  lastBot: ""
+};
 
-  document.querySelectorAll(".menu").forEach(m=>{
-    if(m.id!==id) m.style.display="none";
-  });
+/* =========================
+   IA HYBRIDE (CERCEAU LOCAL)
+========================= */
+function brain(text){
 
-  el.style.display = (el.style.display==="flex")?"none":"flex";
+  let t = text.toLowerCase();
+
+  if(t.includes("bonjour") || t.includes("salut")){
+    return "Bonjour 👋 je suis ton IA hybride gratuite.";
+  }
+
+  if(t.includes("qui es tu")){
+    return "Je suis une IA hybride avec mémoire simple et réponses gratuites.";
+  }
+
+  if(t.includes("heure")){
+    return "Il est " + new Date().toLocaleTimeString();
+  }
+
+  if(t.includes("+") || t.includes("-") || t.includes("*") || t.includes("/")){
+    try{
+      let r = eval(text.replace(/[^0-9+\-*/().]/g,''));
+      if(r) return "Résultat = " + r;
+    }catch(e){}
+  }
+
+  return null;
 }
 
-/* CLOSE MENU */
-document.addEventListener("click",(e)=>{
-  if(!e.target.closest(".menu") && !e.target.tagName==="BUTTON"){
-    document.querySelectorAll(".menu").forEach(m=>m.style.display="none");
-  }
-});
+/* =========================
+   CHAT SYSTEM
+========================= */
 
-/* CHAT */
-function add(text,type="bot"){
+function add(text,type){
 
   document.getElementById("welcome")?.remove();
 
@@ -210,39 +231,71 @@ function add(text,type="bot"){
   div.innerText=text;
   chat.appendChild(div);
   chat.scrollTop=chat.scrollHeight;
+
+  /* mémoire */
+  if(type==="user") memory.lastUser = text;
+  if(type==="bot") memory.lastBot = text;
 }
 
-/* SEND */
-function send(){
-  let t=input.value.trim();
-  if(!t) return;
+/* =========================
+   SEND
+========================= */
 
-  add(t,"user");
+function send(){
+
+  let text=input.value.trim();
+  if(!text) return;
+
+  add(text,"user");
   input.value="";
 
-  setTimeout(()=>add("Réponse IA 🤖"),500);
+  let response = brain(text);
+
+  /* mémoire simple */
+  if(text.includes("répète")){
+    response = memory.lastBot || "Rien à répéter";
+  }
+
+  if(response){
+    setTimeout(()=>add(response,"bot"),400);
+  }else{
+    setTimeout(()=>add("Je comprends 👍 mais je peux améliorer ça avec une IA plus avancée.","bot"),500);
+  }
 }
 
-/* NEW CHAT */
+/* =========================
+   NEW CHAT
+========================= */
+
 function newChat(){
-  chat.innerHTML=`<div id="welcome">Comment puis-je vous aider aujourd’hui ?</div>`;
+  chat.innerHTML = `<div id="welcome">Comment puis-je vous aider aujourd’hui ?</div>`;
+  memory = {lastUser:"",lastBot:""};
 }
 
-/* RENAME */
+/* =========================
+   RENAME
+========================= */
+
 function rename(){
   let n=prompt("Nom du chat ?");
   if(n) document.getElementById("title").innerText=n;
 }
 
-/* SHARE */
+/* =========================
+   SHARE
+========================= */
+
 function share(){
   navigator.clipboard.writeText(location.href);
   alert("Lien copié");
 }
 
-/* MICRO */
+/* =========================
+   MICRO
+========================= */
+
 function voice(){
-  let SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  let SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   if(!SR) return alert("Micro non supporté");
 
   let r=new SR();
@@ -250,12 +303,15 @@ function voice(){
   r.start();
 
   r.onresult=e=>{
-    input.value=e.results[0][0].transcript;
+    input.value = e.results[0][0].transcript;
     send();
   };
 }
 
-/* FILE */
+/* =========================
+   FILE HANDLER
+========================= */
+
 function handleFile(input){
   let f=input.files[0];
   if(!f) return;
@@ -272,6 +328,21 @@ function handleFile(input){
   }else{
     add("📄 "+f.name,"user");
   }
+}
+
+/* =========================
+   MENU
+========================= */
+
+function toggle(id){
+
+  let el=document.getElementById(id);
+
+  document.querySelectorAll(".menu").forEach(m=>{
+    if(m.id!==id) m.style.display="none";
+  });
+
+  el.style.display = (el.style.display==="flex")?"none":"flex";
 }
 
 </script>
