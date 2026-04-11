@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>IA-Tech Final App</title>
+<title>IA-Tech Pro Final</title>
 
 <style>
 body{
@@ -64,7 +64,6 @@ background:linear-gradient(90deg,#06b6d4,#3b82f6);
 gap:6px;
 }
 
-/* INPUT WRAP */
 .inputWrap{
 flex:1;
 display:flex;
@@ -82,7 +81,7 @@ outline:none;
 border-radius:12px;
 }
 
-/* MIC MODERNE */
+/* MICRO SVG (SANS EMOJI) */
 #micBtn{
 width:42px;
 height:42px;
@@ -96,9 +95,10 @@ cursor:pointer;
 transition:0.2s;
 }
 
-.micIcon{
-font-size:18px;
-color:#94a3b8;
+#micBtn svg{
+width:18px;
+height:18px;
+fill:#94a3b8;
 }
 
 #micBtn:active{
@@ -110,8 +110,8 @@ background:#06b6d4 !important;
 animation:pulse 1s infinite;
 }
 
-.listening .micIcon{
-color:white;
+.listening svg{
+fill:white !important;
 }
 
 @keyframes pulse{
@@ -120,7 +120,7 @@ color:white;
 100%{transform:scale(1);}
 }
 
-/* + BUTTON */
+/* BUTTONS */
 #plusBtn{
 background:white;
 color:#06b6d4;
@@ -129,36 +129,12 @@ border-radius:10px;
 font-weight:bold;
 }
 
-/* SEND */
 #sendBtn{
 background:#f97316;
 color:white;
 padding:10px;
 border-radius:10px;
 font-weight:bold;
-}
-
-/* PANEL */
-.panel{
-position:fixed;
-bottom:-260px;
-left:0;
-right:0;
-background:#0b1220;
-border-top:1px solid #333;
-padding:10px;
-transition:0.3s;
-z-index:100;
-}
-
-.panel.active{
-bottom:0;
-}
-
-.panel div{
-padding:12px;
-border-bottom:1px solid #333;
-cursor:pointer;
 }
 
 /* MENU */
@@ -171,6 +147,7 @@ border-radius:10px;
 display:none;
 flex-direction:column;
 z-index:10;
+width:240px;
 }
 
 .menu div{
@@ -179,9 +156,38 @@ border-bottom:1px solid #333;
 cursor:pointer;
 }
 
+/* PANEL */
+.panel{
+position:fixed;
+bottom:-300px;
+left:0;
+right:0;
+background:#0b1220;
+border-top:1px solid #333;
+padding:10px;
+transition:0.3s;
+z-index:100;
+}
+
+.panel.active{bottom:0;}
+
+.panel div{
+padding:12px;
+border-bottom:1px solid #333;
+cursor:pointer;
+}
+
 /* FILE */
 input[type="file"]{
 display:none;
+}
+
+/* PIN */
+#pin{
+display:none;
+padding:8px;
+background:#111827;
+font-size:12px;
 }
 </style>
 </head>
@@ -190,10 +196,11 @@ display:none;
 
 <header>
 <button onclick="toggleMenu('m1')">☰</button>
-<div id="title">IA-Tech Final</div>
-<button onclick="toggleMenu('m2')">⋮</button>
+<div id="title">IA-Tech Pro</div>
+<button onclick="toggleMenu('m1')">⋮</button>
 </header>
 
+<div id="pin"></div>
 <div id="chat"></div>
 
 <!-- INPUT -->
@@ -205,12 +212,30 @@ display:none;
 <input id="input" placeholder="Écris ou parle...">
 
 <button id="micBtn" onclick="voiceAI()">
-<span class="micIcon">🎤</span>
+<svg viewBox="0 0 24 24">
+<path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+<path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+</svg>
 </button>
 
 </div>
 
 <button id="sendBtn" onclick="send()">➤</button>
+
+</div>
+
+<!-- MENU COMPLET -->
+<div id="m1" class="menu">
+
+<div onclick="addParticipants()">👥 Ajouter participants</div>
+<div onclick="shareApp()">📤 Partager</div>
+<div onclick="renameApp()">✏️ Renommer</div>
+<div onclick="addProject()">📁 Ajouter au projet</div>
+<div onclick="archiveChat()">🗄️ Archiver</div>
+<div onclick="pinMessage()">📌 Épingler</div>
+<div onclick="addHome()">🏠 Ajouter écran d’accueil</div>
+<div onclick="openSettings()">⚙️ Paramètres</div>
+<div onclick="deleteChat()">🗑️ Supprimer</div>
 
 </div>
 
@@ -222,18 +247,6 @@ display:none;
 <div onclick="closePanel()">❌ Fermer</div>
 </div>
 
-<!-- MENUS -->
-<div id="m1" class="menu">
-<div onclick="home()">Accueil</div>
-<div onclick="newChat()">Nouveau chat</div>
-</div>
-
-<div id="m2" class="menu">
-<div onclick="rename()">Renommer</div>
-<div onclick="share()">Partager</div>
-</div>
-
-<!-- FILES -->
 <input type="file" id="fileImage" accept="image/*">
 <input type="file" id="fileDoc" accept="*/*">
 
@@ -241,19 +254,18 @@ display:none;
 
 let chat=document.getElementById("chat");
 let input=document.getElementById("input");
-let panel=document.getElementById("panel");
-let title=document.getElementById("title");
 let mic=document.getElementById("micBtn");
+let title=document.getElementById("title");
+let pin=document.getElementById("pin");
 
-/* IA */
+let last="";
+
+/* IA SIMPLE */
 function brain(t){
 t=t.toLowerCase();
-
 if(t.includes("bonjour")) return "Bonjour 👋";
-if(t.includes("salut")) return "Salut 😄";
 if(t.includes("ça va")) return "Oui très bien 😊";
 if(t.includes("merci")) return "Avec plaisir 😊";
-
 return "Je comprends 👍";
 }
 
@@ -264,6 +276,7 @@ d.className="msg "+type;
 d.innerText=text;
 chat.appendChild(d);
 chat.scrollTop=chat.scrollHeight;
+if(type==="bot") last=text;
 }
 
 /* SEND */
@@ -277,7 +290,7 @@ input.value="";
 setTimeout(()=>add(brain(t),"bot"),300);
 }
 
-/* 🎤 MICRO MODERNE */
+/* MICRO */
 function voiceAI(){
 
 let SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -293,8 +306,6 @@ let rec=new SpeechRecognition();
 rec.lang="fr-FR";
 rec.start();
 
-rec.onstart=()=>add("🎤 J'écoute...","bot");
-
 rec.onresult=function(e){
 input.value=e.results[0][0].transcript;
 send();
@@ -305,79 +316,31 @@ mic.classList.remove("listening");
 };
 }
 
-/* PANEL */
-function openPanel(){panel.classList.add("active");}
-function closePanel(){panel.classList.remove("active");}
-
-/* CAMERA */
-function openCamera(){
-let f=document.getElementById("fileImage");
-f.setAttribute("capture","environment");
-f.click();
-closePanel();
-}
-
-/* GALLERY */
-function openGallery(){
-let f=document.getElementById("fileImage");
-f.removeAttribute("capture");
-f.click();
-closePanel();
-}
-
-/* FILE */
-function openFile(){
-document.getElementById("fileDoc").click();
-closePanel();
-}
-
-/* MENUS */
+/* MENU */
 function toggleMenu(id){
 let m=document.getElementById(id);
 m.style.display=(m.style.display==="flex")?"none":"flex";
 }
 
-/* HOME */
-function home(){
-add("🏠 Accueil","bot");
-}
+/* ACTIONS */
+function addParticipants(){add("👥 participant ajouté","bot");}
+function shareApp(){alert("Lien copié");}
+function renameApp(){let n=prompt("Nom ?");if(n)title.innerText=n;}
+function addProject(){localStorage.setItem("p",chat.innerHTML);add("📁 projet sauvegardé","bot");}
+function archiveChat(){localStorage.setItem("a",chat.innerHTML);chat.innerHTML="";add("🗄️ archivé","bot");}
+function pinMessage(){if(last)pin.style.display="block",pin.innerText="📌 "+last;}
+function addHome(){alert("Ajout écran accueil");}
+function openSettings(){alert("Paramètres ouverts");}
+function deleteChat(){chat.innerHTML="";add("🗑️ supprimé","bot");}
 
-/* NEW CHAT */
-function newChat(){
-chat.innerHTML="";
-}
+/* PANEL */
+function openPanel(){panel.classList.add("active");}
+function closePanel(){panel.classList.remove("active");}
 
-/* SHARE */
-function share(){
-if(navigator.share){
-navigator.share({title:"IA-Tech",url:location.href});
-}else{
-navigator.clipboard.writeText(location.href);
-alert("Lien copié");
-}
-}
-
-/* RENAME */
-function rename(){
-let n=prompt("Nom ?");
-if(n)title.innerText=n;
-}
-
-/* FILES */
-document.getElementById("fileImage").onchange=function(e){
-let file=e.target.files[0];
-if(!file)return;
-
-let r=new FileReader();
-r.onload=()=>add("🖼️ image envoyée","user");
-r.readAsDataURL(file);
-};
-
-document.getElementById("fileDoc").onchange=function(e){
-let f=e.target.files[0];
-if(!f)return;
-add("📁 "+f.name,"user");
-};
+/* FILE */
+function openCamera(){document.getElementById("fileImage").click();}
+function openGallery(){document.getElementById("fileImage").click();}
+function openFile(){document.getElementById("fileDoc").click();}
 
 </script>
 
