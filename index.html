@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>IA-Tech Pro</title>
+<title>IA-Tech Ultra</title>
 
 <style>
 body{
@@ -72,21 +72,13 @@ border-radius:10px;
 outline:none;
 }
 
-/* BTN + */
-#plusBtn{
+/* ➕ BUTTON */
+#addBtn{
 background:white;
 color:#06b6d4;
 padding:10px;
 border-radius:10px;
 font-weight:bold;
-}
-
-/* VOICE IA */
-#voiceBtn{
-background:#111827;
-color:#06b6d4;
-padding:10px;
-border-radius:10px;
 }
 
 /* SEND */
@@ -98,7 +90,67 @@ border-radius:10px;
 font-weight:bold;
 }
 
-/* PANEL + */
+/* 🎤 MICRO IA STYLE */
+#voiceBtn{
+background:#111827;
+padding:10px;
+border-radius:12px;
+display:flex;
+align-items:center;
+justify-content:center;
+}
+
+.mic{
+width:14px;
+height:18px;
+border:2px solid #06b6d4;
+border-radius:20px;
+position:relative;
+}
+
+/* rond haut */
+.mic::before{
+content:"";
+position:absolute;
+top:-6px;
+left:50%;
+transform:translateX(-50%);
+width:6px;
+height:6px;
+background:#06b6d4;
+border-radius:50%;
+}
+
+/* pied + trait */
+.mic::after{
+content:"";
+position:absolute;
+bottom:-8px;
+left:50%;
+transform:translateX(-50%);
+width:2px;
+height:6px;
+background:#06b6d4;
+}
+
+/* animation écoute */
+.listening .mic{
+border-color:#f97316;
+animation:pulse 1s infinite;
+}
+
+.listening .mic::before,
+.listening .mic::after{
+background:#f97316;
+}
+
+@keyframes pulse{
+0%{transform:scale(1);}
+50%{transform:scale(1.2);}
+100%{transform:scale(1);}
+}
+
+/* PANEL */
 .panel{
 position:fixed;
 bottom:-260px;
@@ -139,7 +191,7 @@ border-bottom:1px solid #333;
 cursor:pointer;
 }
 
-/* FILE HIDDEN */
+/* FILE */
 input[type="file"]{
 display:none;
 }
@@ -150,22 +202,22 @@ display:none;
 
 <header>
 <button onclick="toggleMenu('m1')">☰</button>
-<div id="title">IA-Tech Pro</div>
-<div>
+<div id="title">IA-Tech Ultra</div>
 <button onclick="toggleMenu('m2')">⋮</button>
-</div>
 </header>
 
 <div id="chat"></div>
 
-<!-- BARRE -->
+<!-- INPUT -->
 <div id="inputBox">
 
-<button id="plusBtn" onclick="openPanel()">＋</button>
+<button id="addBtn" onclick="openPanel()">＋</button>
 
 <input id="input" placeholder="Écris ou parle...">
 
-<button id="voiceBtn" onclick="voiceAI()">🎙 IA</button>
+<button id="voiceBtn" onclick="voiceAI()">
+<div class="mic"></div>
+</button>
 
 <button id="sendBtn" onclick="send()">➤</button>
 
@@ -200,17 +252,16 @@ let chat=document.getElementById("chat");
 let input=document.getElementById("input");
 let panel=document.getElementById("panel");
 let title=document.getElementById("title");
+let voiceBtn=document.getElementById("voiceBtn");
 
-/* 🧠 IA */
+/* IA */
 function brain(t){
 t=t.toLowerCase();
 
 if(t.includes("bonjour")) return "Bonjour 👋";
 if(t.includes("salut")) return "Salut 😄";
 if(t.includes("ça va")) return "Oui très bien 😊";
-if(t.includes("comment vas tu")) return "Je vais très bien merci 😊";
 if(t.includes("merci")) return "Avec plaisir 😊";
-if(t.includes("cv")) return "CV = document professionnel 📄";
 
 return "Je comprends 👍";
 }
@@ -235,7 +286,7 @@ input.value="";
 setTimeout(()=>add(brain(t),"bot"),300);
 }
 
-/* VOICE IA */
+/* 🎤 VOICE IA */
 function voiceAI(){
 let SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
@@ -248,11 +299,17 @@ let rec=new SpeechRecognition();
 rec.lang="fr-FR";
 rec.start();
 
+voiceBtn.classList.add("listening");
+
 rec.onstart=()=>add("🎙 J'écoute...","bot");
 
 rec.onresult=function(e){
 input.value=e.results[0][0].transcript;
 send();
+};
+
+rec.onend=function(){
+voiceBtn.classList.remove("listening");
 };
 }
 
@@ -287,34 +344,6 @@ document.getElementById("fileDoc").click();
 closePanel();
 }
 
-/* IMAGE ADD */
-document.getElementById("fileImage").onchange=function(e){
-let file=e.target.files[0];
-if(!file)return;
-
-let reader=new FileReader();
-reader.onload=function(){
-let d=document.createElement("div");
-d.className="msg user";
-
-let img=document.createElement("img");
-img.src=reader.result;
-img.style.maxWidth="200px";
-img.style.borderRadius="10px";
-
-d.appendChild(img);
-chat.appendChild(d);
-};
-reader.readAsDataURL(file);
-};
-
-/* FILE NAME */
-document.getElementById("fileDoc").onchange=function(e){
-let f=e.target.files[0];
-if(!f)return;
-add("📁 "+f.name,"user");
-};
-
 /* MENUS */
 function toggleMenu(id){
 let m=document.getElementById(id);
@@ -346,6 +375,33 @@ function rename(){
 let n=prompt("Nom ?");
 if(n)title.innerText=n;
 }
+
+/* FILE HANDLING */
+document.getElementById("fileImage").onchange=function(e){
+let file=e.target.files[0];
+if(!file)return;
+
+let reader=new FileReader();
+reader.onload=function(){
+let d=document.createElement("div");
+d.className="msg user";
+
+let img=document.createElement("img");
+img.src=reader.result;
+img.style.maxWidth="200px";
+img.style.borderRadius="10px";
+
+d.appendChild(img);
+chat.appendChild(d);
+};
+reader.readAsDataURL(file);
+};
+
+document.getElementById("fileDoc").onchange=function(e){
+let f=e.target.files[0];
+if(!f)return;
+add("📁 "+f.name,"user");
+};
 
 </script>
 
