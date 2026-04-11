@@ -1,0 +1,22 @@
+[
+  {
+    "keys": ["france", "paris"],
+    "answer": "Paris est la capitale de la France 🇫🇷"
+  },
+  {
+    "keys": ["senegal", "dakar"],
+    "answer": "Dakar est la capitale du Sénégal 🇸🇳"
+  },
+  {
+    "keys": ["terre"],
+    "answer": "La Terre 🌍 est notre planète"
+  },
+  {
+    "keys": ["soleil"],
+    "answer": "Le Soleil ☀️ est une étoile"
+  },
+  {
+    "keys": ["ia"],
+    "answer": "L’IA 🤖 imite l’intelligence humaine"
+  }
+]
