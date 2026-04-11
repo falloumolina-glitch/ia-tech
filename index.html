@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>IA-Tech Stable</title>
+<title>IA-Tech Pro</title>
 
 <style>
 body{
@@ -45,7 +45,6 @@ display:flex;
 flex-direction:column;
 }
 
-/* MESSAGE */
 .msg{
 margin:5px 0;
 padding:8px;
@@ -56,22 +55,13 @@ max-width:75%;
 .user{background:#06b6d4;align-self:flex-end;}
 .bot{background:#1e293b;}
 
-/* CENTRAGE BIENVENUE */
-#welcome{
-position:absolute;
-top:50%;
-left:50%;
-transform:translate(-50%,-50%);
-opacity:0.7;
-text-align:center;
-font-size:15px;
-}
-
-/* INPUT */
+/* INPUT BAR */
 #inputBox{
 display:flex;
+align-items:center;
 padding:10px;
 background:linear-gradient(90deg,#06b6d4,#3b82f6);
+gap:6px;
 }
 
 input{
@@ -82,8 +72,25 @@ border-radius:10px;
 outline:none;
 }
 
-#inputBox button{
-margin-left:6px;
+/* BTN + */
+#plusBtn{
+background:white;
+color:#06b6d4;
+padding:10px;
+border-radius:10px;
+font-weight:bold;
+}
+
+/* VOICE IA */
+#voiceBtn{
+background:#111827;
+color:#06b6d4;
+padding:10px;
+border-radius:10px;
+}
+
+/* SEND */
+#sendBtn{
 background:#f97316;
 color:white;
 padding:10px;
@@ -91,7 +98,30 @@ border-radius:10px;
 font-weight:bold;
 }
 
-/* MENUS */
+/* PANEL + */
+.panel{
+position:fixed;
+bottom:-260px;
+left:0;
+right:0;
+background:#0b1220;
+border-top:1px solid #333;
+padding:10px;
+transition:0.3s;
+z-index:100;
+}
+
+.panel.active{
+bottom:0;
+}
+
+.panel div{
+padding:12px;
+border-bottom:1px solid #333;
+cursor:pointer;
+}
+
+/* MENU */
 .menu{
 position:absolute;
 top:50px;
@@ -108,6 +138,11 @@ padding:10px;
 border-bottom:1px solid #333;
 cursor:pointer;
 }
+
+/* FILE HIDDEN */
+input[type="file"]{
+display:none;
+}
 </style>
 </head>
 
@@ -115,69 +150,76 @@ cursor:pointer;
 
 <header>
 <button onclick="toggleMenu('m1')">☰</button>
-<div id="title">IA-Tech Stable</div>
+<div id="title">IA-Tech Pro</div>
 <div>
-<button onclick="newChat()">＋</button>
-<button onclick="voice()">🎤</button>
 <button onclick="toggleMenu('m2')">⋮</button>
 </div>
 </header>
 
-<div id="chat">
-<div id="welcome">Comment puis-je vous aider aujourd’hui ?</div>
-</div>
+<div id="chat"></div>
 
+<!-- BARRE -->
 <div id="inputBox">
+
+<button id="plusBtn" onclick="openPanel()">＋</button>
+
 <input id="input" placeholder="Écris ou parle...">
-<button onclick="send()">➤</button>
+
+<button id="voiceBtn" onclick="voiceAI()">🎙 IA</button>
+
+<button id="sendBtn" onclick="send()">➤</button>
+
 </div>
 
-<!-- MENU GAUCHE -->
+<!-- PANEL + -->
+<div id="panel" class="panel">
+<div onclick="openCamera()">📷 Caméra</div>
+<div onclick="openGallery()">🖼️ Photo</div>
+<div onclick="openFile()">📁 Fichier</div>
+<div onclick="closePanel()">❌ Fermer</div>
+</div>
+
+<!-- MENUS -->
 <div id="m1" class="menu">
 <div onclick="home()">Accueil</div>
-<div onclick="settings()">Paramètres</div>
 <div onclick="newChat()">Nouveau chat</div>
 </div>
 
-<!-- MENU DROITE -->
 <div id="m2" class="menu">
 <div onclick="rename()">Renommer</div>
 <div onclick="share()">Partager</div>
 </div>
 
+<!-- FILES -->
+<input type="file" id="fileImage" accept="image/*">
+<input type="file" id="fileDoc" accept="*/*">
+
 <script>
 
 let chat=document.getElementById("chat");
 let input=document.getElementById("input");
+let panel=document.getElementById("panel");
 let title=document.getElementById("title");
-let welcome=document.getElementById("welcome");
 
-/* 🧠 IA AMÉLIORÉE */
+/* 🧠 IA */
 function brain(t){
 t=t.toLowerCase();
 
-/* salutations */
-if(t.includes("bonjour")) return "Bonjour 👋 comment vas-tu ?";
-if(t.includes("salut")) return "Salut 😄 heureux de te voir !";
-if(t.includes("bonsoir")) return "Bonsoir 🌙 comment ça va ?";
-if(t.includes("ça va")) return "Oui très bien 😊 et toi ?";
+if(t.includes("bonjour")) return "Bonjour 👋";
+if(t.includes("salut")) return "Salut 😄";
+if(t.includes("ça va")) return "Oui très bien 😊";
 if(t.includes("comment vas tu")) return "Je vais très bien merci 😊";
 if(t.includes("merci")) return "Avec plaisir 😊";
-if(t.includes("cv")) return "CV = document qui décrit ton expérience 📄";
-if(t.includes("aide")) return "Je peux répondre, parler ou écouter 🎤";
+if(t.includes("cv")) return "CV = document professionnel 📄";
 
-return "Je comprends 👍 mais j’apprends encore.";
+return "Je comprends 👍";
 }
 
-/* ADD MESSAGE */
+/* CHAT */
 function add(text,type){
-
-if(welcome) welcome.remove();
-
 let d=document.createElement("div");
 d.className="msg "+type;
 d.innerText=text;
-
 chat.appendChild(d);
 chat.scrollTop=chat.scrollHeight;
 }
@@ -190,11 +232,11 @@ if(!t)return;
 add(t,"user");
 input.value="";
 
-setTimeout(()=>add(brain(t),"bot"),400);
+setTimeout(()=>add(brain(t),"bot"),300);
 }
 
-/* 🔥 VOIX */
-function voice(){
+/* VOICE IA */
+function voiceAI(){
 let SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
 if(!SpeechRecognition){
@@ -206,16 +248,72 @@ let rec=new SpeechRecognition();
 rec.lang="fr-FR";
 rec.start();
 
+rec.onstart=()=>add("🎙 J'écoute...","bot");
+
 rec.onresult=function(e){
 input.value=e.results[0][0].transcript;
 send();
 };
 }
 
-/* NEW CHAT */
-function newChat(){
-chat.innerHTML=`<div id="welcome">Comment puis-je vous aider aujourd’hui ?</div>`;
+/* PANEL */
+function openPanel(){
+panel.classList.add("active");
 }
+
+function closePanel(){
+panel.classList.remove("active");
+}
+
+/* CAMERA */
+function openCamera(){
+let f=document.getElementById("fileImage");
+f.setAttribute("capture","environment");
+f.click();
+closePanel();
+}
+
+/* GALLERY */
+function openGallery(){
+let f=document.getElementById("fileImage");
+f.removeAttribute("capture");
+f.click();
+closePanel();
+}
+
+/* FILE */
+function openFile(){
+document.getElementById("fileDoc").click();
+closePanel();
+}
+
+/* IMAGE ADD */
+document.getElementById("fileImage").onchange=function(e){
+let file=e.target.files[0];
+if(!file)return;
+
+let reader=new FileReader();
+reader.onload=function(){
+let d=document.createElement("div");
+d.className="msg user";
+
+let img=document.createElement("img");
+img.src=reader.result;
+img.style.maxWidth="200px";
+img.style.borderRadius="10px";
+
+d.appendChild(img);
+chat.appendChild(d);
+};
+reader.readAsDataURL(file);
+};
+
+/* FILE NAME */
+document.getElementById("fileDoc").onchange=function(e){
+let f=e.target.files[0];
+if(!f)return;
+add("📁 "+f.name,"user");
+};
 
 /* MENUS */
 function toggleMenu(id){
@@ -225,12 +323,12 @@ m.style.display=(m.style.display==="flex")?"none":"flex";
 
 /* HOME */
 function home(){
-add("🏠 Retour à l'accueil","bot");
+add("🏠 Accueil","bot");
 }
 
-/* SETTINGS */
-function settings(){
-add("⚙️ Paramètres ouverts (version démo)","bot");
+/* NEW CHAT */
+function newChat(){
+chat.innerHTML="";
 }
 
 /* SHARE */
@@ -249,16 +347,7 @@ let n=prompt("Nom ?");
 if(n)title.innerText=n;
 }
 
-/* CLICK OUTSIDE */
-document.addEventListener("click",e=>{
-document.querySelectorAll(".menu").forEach(m=>{
-if(!e.target.closest("button") && !m.contains(e.target)){
-m.style.display="none";
-}
-});
-});
-
 </script>
 
 </body>
-</html>
+  </html>
