@@ -3,7 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>IA-Tech Pro Max</title>
+
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.png">
+
+<meta name="theme-color" content="#0f172a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
 
 <style>
 body{
@@ -55,7 +63,7 @@ word-break:break-word;
 .user{background:#06b6d4;align-self:flex-end;}
 .bot{background:#1e293b;}
 
-/* BARRE DU BAS BLEUE */
+/* INPUT */
 #inputBox{
 display:flex;
 align-items:center;
@@ -64,7 +72,6 @@ background:linear-gradient(90deg,#06b6d4,#3b82f6);
 gap:6px;
 }
 
-/* INPUT */
 .inputWrap{
 flex:1;
 display:flex;
@@ -111,7 +118,7 @@ animation:pulse 1s infinite;
 100%{transform:scale(1);}
 }
 
-/* PLUS */
+/* BUTTONS */
 #plusBtn{
 background:white;
 color:#06b6d4;
@@ -120,7 +127,6 @@ border-radius:10px;
 font-weight:bold;
 }
 
-/* SEND ORANGE */
 #sendBtn{
 background:#f97316;
 color:white;
@@ -201,7 +207,7 @@ font-weight:bold;
 
 <header>
 <button onclick="openMenu('left')">☰</button>
-<div id="title">IA-Tech Pro</div>
+<div id="title">IA-Tech Pro Max</div>
 <button onclick="openMenu('right')">⋮</button>
 </header>
 
@@ -247,7 +253,6 @@ font-weight:bold;
 <div id="captureBtn" onclick="takePhoto()">Prendre photo</div>
 </div>
 
-<!-- FILES SANS TEXTE "Aucun fichier choisi" -->
 <input type="file" id="fileImage" accept="image/*" style="display:none">
 <input type="file" id="fileDoc" style="display:none">
 
@@ -270,13 +275,10 @@ chat.appendChild(d);
 chat.scrollTop=chat.scrollHeight;
 }
 
-/* SEND */
 function send(){
 if(!input.value.trim())return;
-
 add(input.value,"user");
 input.value="";
-
 setTimeout(()=>add("Je comprends 👍","bot"),300);
 }
 
@@ -325,17 +327,12 @@ menu.style.top="50px";
 }
 }
 
-function closeMenus(){
-overlay.style.display="none";
-}
+function closeMenus(){overlay.style.display="none";}
 
-/* SHARE RÉEL */
+/* SHARE */
 function shareApp(){
 if(navigator.share){
-navigator.share({
-title:"IA-Tech Pro",
-url:location.href
-});
+navigator.share({title:"IA-Tech Pro Max",url:location.href});
 }else{
 navigator.clipboard.writeText(location.href);
 alert("Lien copié 📋");
