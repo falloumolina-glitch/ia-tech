@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>IA-Tech Ultra</title>
+<title>IA-Tech Final App</title>
 
 <style>
 body{
@@ -55,7 +55,7 @@ max-width:75%;
 .user{background:#06b6d4;align-self:flex-end;}
 .bot{background:#1e293b;}
 
-/* INPUT BAR */
+/* INPUT */
 #inputBox{
 display:flex;
 align-items:center;
@@ -64,16 +64,64 @@ background:linear-gradient(90deg,#06b6d4,#3b82f6);
 gap:6px;
 }
 
-input{
+/* INPUT WRAP */
+.inputWrap{
+flex:1;
+display:flex;
+align-items:center;
+background:white;
+border-radius:12px;
+padding-right:5px;
+}
+
+.inputWrap input{
 flex:1;
 padding:10px;
 border:none;
-border-radius:10px;
 outline:none;
+border-radius:12px;
 }
 
-/* ➕ BUTTON */
-#addBtn{
+/* MIC MODERNE */
+#micBtn{
+width:42px;
+height:42px;
+border-radius:50%;
+border:none;
+background:#1e293b;
+display:flex;
+align-items:center;
+justify-content:center;
+cursor:pointer;
+transition:0.2s;
+}
+
+.micIcon{
+font-size:18px;
+color:#94a3b8;
+}
+
+#micBtn:active{
+transform:scale(0.9);
+}
+
+.listening{
+background:#06b6d4 !important;
+animation:pulse 1s infinite;
+}
+
+.listening .micIcon{
+color:white;
+}
+
+@keyframes pulse{
+0%{transform:scale(1);}
+50%{transform:scale(1.15);}
+100%{transform:scale(1);}
+}
+
+/* + BUTTON */
+#plusBtn{
 background:white;
 color:#06b6d4;
 padding:10px;
@@ -88,66 +136,6 @@ color:white;
 padding:10px;
 border-radius:10px;
 font-weight:bold;
-}
-
-/* 🎤 MICRO IA STYLE */
-#voiceBtn{
-background:#111827;
-padding:10px;
-border-radius:12px;
-display:flex;
-align-items:center;
-justify-content:center;
-}
-
-.mic{
-width:14px;
-height:18px;
-border:2px solid #06b6d4;
-border-radius:20px;
-position:relative;
-}
-
-/* rond haut */
-.mic::before{
-content:"";
-position:absolute;
-top:-6px;
-left:50%;
-transform:translateX(-50%);
-width:6px;
-height:6px;
-background:#06b6d4;
-border-radius:50%;
-}
-
-/* pied + trait */
-.mic::after{
-content:"";
-position:absolute;
-bottom:-8px;
-left:50%;
-transform:translateX(-50%);
-width:2px;
-height:6px;
-background:#06b6d4;
-}
-
-/* animation écoute */
-.listening .mic{
-border-color:#f97316;
-animation:pulse 1s infinite;
-}
-
-.listening .mic::before,
-.listening .mic::after{
-background:#f97316;
-}
-
-@keyframes pulse{
-0%{transform:scale(1);}
-50%{transform:scale(1.2);}
-100%{transform:scale(1);}
 }
 
 /* PANEL */
@@ -202,7 +190,7 @@ display:none;
 
 <header>
 <button onclick="toggleMenu('m1')">☰</button>
-<div id="title">IA-Tech Ultra</div>
+<div id="title">IA-Tech Final</div>
 <button onclick="toggleMenu('m2')">⋮</button>
 </header>
 
@@ -211,19 +199,22 @@ display:none;
 <!-- INPUT -->
 <div id="inputBox">
 
-<button id="addBtn" onclick="openPanel()">＋</button>
+<button id="plusBtn" onclick="openPanel()">＋</button>
 
+<div class="inputWrap">
 <input id="input" placeholder="Écris ou parle...">
 
-<button id="voiceBtn" onclick="voiceAI()">
-<div class="mic"></div>
+<button id="micBtn" onclick="voiceAI()">
+<span class="micIcon">🎤</span>
 </button>
+
+</div>
 
 <button id="sendBtn" onclick="send()">➤</button>
 
 </div>
 
-<!-- PANEL + -->
+<!-- PANEL -->
 <div id="panel" class="panel">
 <div onclick="openCamera()">📷 Caméra</div>
 <div onclick="openGallery()">🖼️ Photo</div>
@@ -252,7 +243,7 @@ let chat=document.getElementById("chat");
 let input=document.getElementById("input");
 let panel=document.getElementById("panel");
 let title=document.getElementById("title");
-let voiceBtn=document.getElementById("voiceBtn");
+let mic=document.getElementById("micBtn");
 
 /* IA */
 function brain(t){
@@ -286,22 +277,23 @@ input.value="";
 setTimeout(()=>add(brain(t),"bot"),300);
 }
 
-/* 🎤 VOICE IA */
+/* 🎤 MICRO MODERNE */
 function voiceAI(){
+
 let SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
 if(!SpeechRecognition){
-alert("Voice non supporté");
+alert("Micro non supporté");
 return;
 }
+
+mic.classList.add("listening");
 
 let rec=new SpeechRecognition();
 rec.lang="fr-FR";
 rec.start();
 
-voiceBtn.classList.add("listening");
-
-rec.onstart=()=>add("🎙 J'écoute...","bot");
+rec.onstart=()=>add("🎤 J'écoute...","bot");
 
 rec.onresult=function(e){
 input.value=e.results[0][0].transcript;
@@ -309,18 +301,13 @@ send();
 };
 
 rec.onend=function(){
-voiceBtn.classList.remove("listening");
+mic.classList.remove("listening");
 };
 }
 
 /* PANEL */
-function openPanel(){
-panel.classList.add("active");
-}
-
-function closePanel(){
-panel.classList.remove("active");
-}
+function openPanel(){panel.classList.add("active");}
+function closePanel(){panel.classList.remove("active");}
 
 /* CAMERA */
 function openCamera(){
@@ -376,25 +363,14 @@ let n=prompt("Nom ?");
 if(n)title.innerText=n;
 }
 
-/* FILE HANDLING */
+/* FILES */
 document.getElementById("fileImage").onchange=function(e){
 let file=e.target.files[0];
 if(!file)return;
 
-let reader=new FileReader();
-reader.onload=function(){
-let d=document.createElement("div");
-d.className="msg user";
-
-let img=document.createElement("img");
-img.src=reader.result;
-img.style.maxWidth="200px";
-img.style.borderRadius="10px";
-
-d.appendChild(img);
-chat.appendChild(d);
-};
-reader.readAsDataURL(file);
+let r=new FileReader();
+r.onload=()=>add("🖼️ image envoyée","user");
+r.readAsDataURL(file);
 };
 
 document.getElementById("fileDoc").onchange=function(e){
