@@ -15,7 +15,6 @@ body{
   flex-direction:column;
 }
 
-/* HEADER */
 header{
   display:flex;
   justify-content:space-between;
@@ -25,7 +24,6 @@ header{
   border-bottom:1px solid #eee;
 }
 
-/* CHAT */
 #chat{
   flex:1;
   padding:15px;
@@ -45,7 +43,6 @@ header{
 .user{background:#e5e7eb; align-self:flex-end;}
 .bot{background:white;border:1px solid #eee;align-self:flex-start;}
 
-/* WELCOME */
 #welcome{
   position:absolute;
   top:50%;
@@ -56,7 +53,6 @@ header{
   width:80%;
 }
 
-/* INPUT */
 .bottom{
   padding:10px;
   background:white;
@@ -79,11 +75,6 @@ input{
   background:transparent;
 }
 
-button{
-  cursor:pointer;
-}
-
-/* BUTTONS */
 .plus{
   width:42px;
   height:42px;
@@ -102,7 +93,6 @@ button{
   color:white;
 }
 
-/* MENU */
 .menu{
   position:absolute;
   top:55px;
@@ -136,10 +126,9 @@ img{
   <button onclick="toggle('right')">⋮</button>
 </header>
 
-<!-- MENUS -->
 <div class="menu" id="left">
   <button onclick="newChat()">Nouveau projet</button>
-  <button onclick="add('Devoirs activés')">Devoirs</button>
+  <button onclick="alert('Devoirs activés')">Devoirs</button>
 </div>
 
 <div class="menu" id="right">
@@ -151,9 +140,7 @@ img{
   <div id="welcome">Comment puis-je vous aider aujourd’hui ?</div>
 </div>
 
-<!-- INPUT -->
 <div class="bottom">
-
   <div class="bar">
 
     <button class="plus" onclick="toggle('plusMenu')">+</button>
@@ -171,10 +158,8 @@ img{
     <button onclick="document.getElementById('camera').click()">Caméra</button>
     <button onclick="document.getElementById('file').click()">Fichier</button>
   </div>
-
 </div>
 
-<!-- FILE INPUTS -->
 <input type="file" id="photo" accept="image/*" hidden onchange="handleFile(this)">
 <input type="file" id="camera" accept="image/*" capture="environment" hidden onchange="handleFile(this)">
 <input type="file" id="file" hidden onchange="handleFile(this)">
@@ -182,59 +167,111 @@ img{
 <script>
 
 /* =========================
-   🧠 MÉMOIRE SIMPLE
+   MÉMOIRE
 ========================= */
-let memory = {
-  lastUser: "",
-  lastBot: ""
-};
+let memory = {lastUser:"",lastBot:"",topic:""};
 
 /* =========================
-   IA HYBRIDE (CERCEAU LOCAL)
+   NORMALISATION
 ========================= */
-function brain(text){
-
-  let t = text.toLowerCase();
-
-  if(t.includes("bonjour") || t.includes("salut")){
-    return "Bonjour 👋 je suis ton IA hybride gratuite.";
-  }
-
-  if(t.includes("qui es tu")){
-    return "Je suis une IA hybride avec mémoire simple et réponses gratuites.";
-  }
-
-  if(t.includes("heure")){
-    return "Il est " + new Date().toLocaleTimeString();
-  }
-
-  if(t.includes("+") || t.includes("-") || t.includes("*") || t.includes("/")){
-    try{
-      let r = eval(text.replace(/[^0-9+\-*/().]/g,''));
-      if(r) return "Résultat = " + r;
-    }catch(e){}
-  }
-
-  return null;
+function normalize(t){
+  return t.toLowerCase()
+  .normalize("NFD").replace(/[\u0300-\u036f]/g,"");
 }
 
 /* =========================
-   CHAT SYSTEM
+   BASE DE CONNAISSANCES ULTRA
+========================= */
+
+const DB = [
+{keys:["france","paris"],answer:"France 🇫🇷 capitale Paris."},
+{keys:["senegal","dakar"],answer:"Sénégal 🇸🇳 capitale Dakar."},
+{keys:["terre","planete"],answer:"La Terre 🌍 est notre planète."},
+{keys:["soleil"],answer:"Le Soleil ☀️ est une étoile."},
+{keys:["lune"],answer:"La Lune 🌙 est un satellite naturel."},
+{keys:["ia","intelligence artificielle"],answer:"IA 🤖 technologie intelligente."},
+{keys:["internet","web"],answer:"Internet 🌐 réseau mondial."},
+{keys:["ordinateur"],answer:"Ordinateur 💻 machine de calcul."},
+{keys:["gravite"],answer:"La gravité 🌍 attire les objets."},
+{keys:["eau"],answer:"L’eau 💧 est essentielle à la vie."},
+{keys:["football","foot"],answer:"Football ⚽ sport mondial."},
+{keys:["basket"],answer:"Basketball 🏀 sport populaire."},
+{keys:["math","calcul"],answer:"Les maths servent à calculer ➗."},
+{keys:["univers"],answer:"L’univers est tout ce qui existe ♾️."},
+{keys:["galaxie"],answer:"Une galaxie est un ensemble d’étoiles 🌌."},
+{keys:["atome"],answer:"Un atome est la plus petite matière ⚛️."},
+{keys:["cellule"],answer:"La cellule est l’unité du vivant 🧫."},
+{keys:["virus"],answer:"Un virus peut causer des maladies 🦠."},
+{keys:["argent"],answer:"L’argent est un moyen d’échange 💵."},
+{keys:["loi"],answer:"Une loi est une règle officielle 📜."},
+{keys:["climat"],answer:"Le climat décrit le temps sur long terme 🌦️."}
+];
+
+/* =========================
+   CERVEAU IA
+========================= */
+
+function brain(text){
+
+let t = normalize(text);
+
+memory.lastUser = text;
+
+/* recherche */
+for(let item of DB){
+for(let k of item.keys){
+if(t.includes(k)){
+memory.topic = k;
+memory.lastBot = item.answer;
+return item.answer;
+}
+}
+}
+
+/* chat */
+if(/bonjour|salut/.test(t))
+return "Bonjour 👋 je suis ton IA.";
+
+if(/comment ca va/.test(t))
+return "Je vais bien 👍";
+
+if(/qui es tu/.test(t))
+return "Je suis une IA hybride intelligente 🤖.";
+
+if(/merci/.test(t))
+return "Avec plaisir 😊";
+
+if(t.includes("heure"))
+return "Il est " + new Date().toLocaleTimeString();
+
+/* calcul */
+if(/[0-9]/.test(t) && /[+\-*/]/.test(t)){
+try{
+return "Résultat = " + eval(text.replace(/[^0-9+\-*/().]/g,''));
+}catch(e){}
+}
+
+/* continuité */
+if(/continue|et apres/.test(t))
+return "Je continue sur : " + (memory.topic || "aucun sujet");
+
+/* fallback */
+return "Je comprends 👍 mais je peux apprendre encore plus.";
+}
+
+/* =========================
+   CHAT
 ========================= */
 
 function add(text,type){
+document.getElementById("welcome")?.remove();
 
-  document.getElementById("welcome")?.remove();
+let d=document.createElement("div");
+d.className="msg "+type;
+d.innerText=text;
 
-  let div=document.createElement("div");
-  div.className="msg "+type;
-  div.innerText=text;
-  chat.appendChild(div);
-  chat.scrollTop=chat.scrollHeight;
-
-  /* mémoire */
-  if(type==="user") memory.lastUser = text;
-  if(type==="bot") memory.lastBot = text;
+chat.appendChild(d);
+chat.scrollTop=chat.scrollHeight;
 }
 
 /* =========================
@@ -242,25 +279,13 @@ function add(text,type){
 ========================= */
 
 function send(){
+let text=input.value.trim();
+if(!text)return;
 
-  let text=input.value.trim();
-  if(!text) return;
+add(text,"user");
+input.value="";
 
-  add(text,"user");
-  input.value="";
-
-  let response = brain(text);
-
-  /* mémoire simple */
-  if(text.includes("répète")){
-    response = memory.lastBot || "Rien à répéter";
-  }
-
-  if(response){
-    setTimeout(()=>add(response,"bot"),400);
-  }else{
-    setTimeout(()=>add("Je comprends 👍 mais je peux améliorer ça avec une IA plus avancée.","bot"),500);
-  }
+setTimeout(()=>add(brain(text),"bot"),300);
 }
 
 /* =========================
@@ -268,66 +293,8 @@ function send(){
 ========================= */
 
 function newChat(){
-  chat.innerHTML = `<div id="welcome">Comment puis-je vous aider aujourd’hui ?</div>`;
-  memory = {lastUser:"",lastBot:""};
-}
-
-/* =========================
-   RENAME
-========================= */
-
-function rename(){
-  let n=prompt("Nom du chat ?");
-  if(n) document.getElementById("title").innerText=n;
-}
-
-/* =========================
-   SHARE
-========================= */
-
-function share(){
-  navigator.clipboard.writeText(location.href);
-  alert("Lien copié");
-}
-
-/* =========================
-   MICRO
-========================= */
-
-function voice(){
-  let SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if(!SR) return alert("Micro non supporté");
-
-  let r=new SR();
-  r.lang="fr-FR";
-  r.start();
-
-  r.onresult=e=>{
-    input.value = e.results[0][0].transcript;
-    send();
-  };
-}
-
-/* =========================
-   FILE HANDLER
-========================= */
-
-function handleFile(input){
-  let f=input.files[0];
-  if(!f) return;
-
-  if(f.type.startsWith("image/")){
-    let div=document.createElement("div");
-    div.className="msg user";
-
-    let img=document.createElement("img");
-    img.src=URL.createObjectURL(f);
-
-    div.appendChild(img);
-    chat.appendChild(div);
-  }else{
-    add("📄 "+f.name,"user");
-  }
+chat.innerHTML=`<div id="welcome">Comment puis-je vous aider aujourd’hui ?</div>`;
+memory={lastUser:"",lastBot:"",topic:""};
 }
 
 /* =========================
@@ -335,17 +302,66 @@ function handleFile(input){
 ========================= */
 
 function toggle(id){
+let el=document.getElementById(id);
+document.querySelectorAll(".menu").forEach(m=>{
+if(m.id!==id)m.style.display="none";
+});
+el.style.display=el.style.display==="flex"?"none":"flex";
+}
 
-  let el=document.getElementById(id);
+/* =========================
+   VOICE
+========================= */
 
-  document.querySelectorAll(".menu").forEach(m=>{
-    if(m.id!==id) m.style.display="none";
-  });
+function voice(){
+let SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+if(!SR)return alert("Micro non supporté");
 
-  el.style.display = (el.style.display==="flex")?"none":"flex";
+let r=new SR();
+r.lang="fr-FR";
+r.start();
+
+r.onresult=e=>{
+input.value=e.results[0][0].transcript;
+send();
+};
+}
+
+/* =========================
+   FILE
+========================= */
+
+function handleFile(input){
+let f=input.files[0];
+if(!f)return;
+
+if(f.type.startsWith("image/")){
+let d=document.createElement("div");
+d.className="msg user";
+let img=document.createElement("img");
+img.src=URL.createObjectURL(f);
+d.appendChild(img);
+chat.appendChild(d);
+}else{
+add("📄 "+f.name,"user");
+}
+}
+
+/* =========================
+   SHARE + RENAME
+========================= */
+
+function share(){
+navigator.clipboard.writeText(location.href);
+alert("Lien copié");
+}
+
+function rename(){
+let n=prompt("Nom ?");
+if(n)title.innerText=n;
 }
 
 </script>
 
 </body>
-  </html>
+</html>
