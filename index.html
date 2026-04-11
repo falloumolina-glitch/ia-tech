@@ -55,7 +55,7 @@ word-break:break-word;
 .user{background:#06b6d4;align-self:flex-end;}
 .bot{background:#1e293b;}
 
-/* BARRE DU BAS BLEUE (IMPORTANT) */
+/* BARRE DU BAS BLEUE */
 #inputBox{
 display:flex;
 align-items:center;
@@ -81,7 +81,7 @@ border:none;
 outline:none;
 }
 
-/* MICRO SVG */
+/* MICRO */
 #micBtn{
 width:42px;
 height:42px;
@@ -120,14 +120,13 @@ border-radius:10px;
 font-weight:bold;
 }
 
-/* BOUTON ORANGE */
+/* SEND ORANGE */
 #sendBtn{
 background:#f97316;
 color:white;
 padding:10px 14px;
 border-radius:12px;
 font-weight:bold;
-box-shadow:0 5px 15px rgba(249,115,22,0.4);
 }
 
 /* MENU */
@@ -248,8 +247,9 @@ font-weight:bold;
 <div id="captureBtn" onclick="takePhoto()">Prendre photo</div>
 </div>
 
-<input type="file" id="fileImage" accept="image/*">
-<input type="file" id="fileDoc">
+<!-- FILES SANS TEXTE "Aucun fichier choisi" -->
+<input type="file" id="fileImage" accept="image/*" style="display:none">
+<input type="file" id="fileDoc" style="display:none">
 
 <script>
 
@@ -300,7 +300,7 @@ send();
 rec.onend=()=>mic.classList.remove("listening");
 }
 
-/* MENUS */
+/* MENU */
 function openMenu(type){
 overlay.style.display="block";
 menu.innerHTML="";
@@ -354,7 +354,7 @@ function deleteChat(){chat.innerHTML="";}
 function openPanel(){panel.classList.add("active");}
 function closePanel(){panel.classList.remove("active");}
 
-/* CAMERA LIVE */
+/* CAMERA */
 async function openCamera(){
 cameraBox.style.display="flex";
 let stream=await navigator.mediaDevices.getUserMedia({video:true});
