@@ -6,97 +6,141 @@
 <title>IA-Tech</title>
 
 <style>
-:root{
-  --bg:#ffffff;
-  --text:#111;
-  --chat:#f6f6f6;
-  --border:#e5e5e5;
-}
-
-body.dark{
-  --bg:#0f0f10;
-  --text:#fff;
-  --chat:#1a1a1a;
-  --border:#333;
-}
-
 body{
   margin:0;
   font-family:system-ui;
-  background:var(--bg);
-  color:var(--text);
+  background:#f7f7f8;
   height:100vh;
   display:flex;
   flex-direction:column;
+  color:#111;
 }
 
 /* HEADER */
 header{
   display:flex;
   justify-content:space-between;
+  align-items:center;
   padding:12px 16px;
-  border-bottom:1px solid var(--border);
+  background:white;
+  border-bottom:1px solid #eaeaea;
+}
+
+/* MENU */
+.icon{
+  font-size:22px;
+  border:none;
+  background:none;
+  cursor:pointer;
+}
+
+.menu{
+  position:absolute;
+  top:55px;
+  background:white;
+  border:1px solid #eee;
+  border-radius:14px;
+  box-shadow:0 12px 30px rgba(0,0,0,0.08);
+  display:none;
+  flex-direction:column;
+  width:230px;
+  z-index:999;
+}
+
+.menu button{
+  padding:12px;
+  border:none;
+  background:white;
+  text-align:left;
+  cursor:pointer;
+}
+
+.menu button:hover{
+  background:#f4f4f4;
 }
 
 /* CHAT */
 #chat{
   flex:1;
-  padding:20px;
+  padding:18px;
   overflow-y:auto;
   display:flex;
   flex-direction:column;
-  gap:12px;
+  gap:10px;
 }
 
 .msg{
   max-width:80%;
   padding:12px 14px;
   border-radius:14px;
+  font-size:15px;
+  line-height:1.4;
 }
 
 .user{
-  background:var(--chat);
+  background:#e9e9eb;
   align-self:flex-end;
 }
 
 .bot{
-  border:1px solid var(--border);
+  background:white;
+  border:1px solid #eee;
   align-self:flex-start;
 }
 
-/* INPUT */
+/* INPUT BAR PRO */
 .bottom{
   padding:12px;
-  border-top:1px solid var(--border);
+  background:white;
+  border-top:1px solid #eee;
 }
 
-.box{
+.input-box{
   display:flex;
+  align-items:center;
   gap:8px;
-  background:var(--chat);
-  padding:10px;
-  border-radius:25px;
+  background:#f1f1f3;
+  border-radius:28px;
+  padding:10px 12px;
+  border:1px solid #e6e6e6;
 }
 
+/* PLUS */
+.plus{
+  width:46px;
+  height:46px;
+  border-radius:50%;
+  border:none;
+  background:white;
+  font-size:22px;
+  cursor:pointer;
+}
+
+/* INPUT */
 input{
   flex:1;
   border:none;
   outline:none;
   background:transparent;
-  color:var(--text);
+  font-size:15px;
 }
 
-button{
+/* BUTTONS */
+.send{
+  width:36px;
+  height:36px;
+  border-radius:50%;
+  background:black;
+  color:white;
   border:none;
   cursor:pointer;
 }
 
-.send{
-  background:var(--text);
-  color:var(--bg);
-  border-radius:50%;
-  width:36px;
-  height:36px;
+.mic{
+  border:none;
+  background:transparent;
+  font-size:18px;
+  cursor:pointer;
 }
 </style>
 </head>
@@ -104,27 +148,60 @@ button{
 <body>
 
 <header>
+  <button class="icon" onclick="toggle('left')">☰</button>
   <b>IA-Tech</b>
-  <button onclick="toggleTheme()">🌓</button>
+  <button class="icon" onclick="toggle('right')">⋮</button>
 </header>
+
+<!-- LEFT MENU -->
+<div class="menu" id="left">
+  <button onclick="newChat()">Nouveau projet</button>
+  <button onclick="ask('devoirs')">Devoirs</button>
+</div>
+
+<!-- RIGHT MENU -->
+<div class="menu" id="right">
+  <button onclick="renameChat()">Renommer</button>
+  <button onclick="archiveChat()">Archiver</button>
+  <button onclick="shareChat()">Partager</button>
+</div>
 
 <div id="chat">
   <div class="msg bot">Comment puis-je vous aider aujourd’hui ?</div>
 </div>
 
+<!-- INPUT -->
 <div class="bottom">
-  <div class="box">
+  <div class="input-box">
+
+    <button class="plus" onclick="alert('Photo / Caméra / Fichier à ajouter après')">+</button>
+
     <input id="input" placeholder="Message...">
-    <button onclick="send()">➤</button>
+
+    <button class="mic" onclick="voice()">🎙</button>
+
+    <button class="send" onclick="send()">➤</button>
+
   </div>
 </div>
 
 <script>
 
-function toggleTheme(){
-  document.body.classList.toggle("dark");
+/* MENU SAFE */
+function toggle(id){
+  document.querySelectorAll(".menu").forEach(m=>{
+    if(m.id!==id) m.style.display="none";
+  });
+
+  let el=document.getElementById(id);
+  el.style.display = (el.style.display==="flex")?"none":"flex";
 }
 
+document.addEventListener("click",()=>{
+  document.querySelectorAll(".menu").forEach(m=>m.style.display="none");
+});
+
+/* CHAT */
 function add(text,type){
   let div=document.createElement("div");
   div.className="msg "+type;
@@ -133,28 +210,76 @@ function add(text,type){
   chat.scrollTop=chat.scrollHeight;
 }
 
-/* FRONT → BACKEND */
-async function send(){
+/* MINI BASE DE CONNAISSANCE */
+function brain(q){
+
+  q=q.toLowerCase();
+
+  if(q.includes("bonjour")) return "Bonjour 👋 Comment puis-je vous aider ?";
+  if(q.includes("qui es tu")) return "Je suis ton assistant IA.";
+  if(q.includes("aide")) return "Je peux répondre à des questions, analyser du texte et t’aider.";
+
+  return null;
+}
+
+/* SEND */
+function send(){
   let text=input.value.trim();
   if(!text) return;
 
   add(text,"user");
   input.value="";
 
-  add("IA écrit...","bot");
+  let local = brain(text);
 
-  const res = await fetch("https://TON-SERVEUR.onrender.com/chat",{
-    method:"POST",
-    headers:{ "Content-Type":"application/json" },
-    body:JSON.stringify({message:text})
-  });
+  if(local){
+    add(local,"bot");
+    return;
+  }
 
-  const data = await res.json();
+  add("Analyse en cours...","bot");
 
-  chat.lastChild.innerText = data.reply;
+  setTimeout(()=>{
+    add("Réponse IA 🤖 (mode simple actif)","bot");
+  },700);
+}
+
+/* ACTIONS RÉELLES */
+function newChat(){
+  chat.innerHTML="";
+  add("Chat réinitialisé","bot");
+}
+
+function renameChat(){
+  let name=prompt("Nom du chat ?");
+  if(name) document.title=name;
+}
+
+function archiveChat(){
+  add("Chat archivé ✔","bot");
+}
+
+function shareChat(){
+  navigator.clipboard.writeText(location.href);
+  alert("Lien copié");
+}
+
+/* MICRO */
+function voice(){
+  let SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR) return alert("Micro non supporté");
+
+  let r=new SR();
+  r.lang="fr-FR";
+  r.start();
+
+  r.onresult=e=>{
+    input.value=e.results[0][0].transcript;
+    send();
+  };
 }
 
 </script>
 
 </body>
-</html>
+  </html>
