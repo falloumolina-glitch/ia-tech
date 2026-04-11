@@ -206,7 +206,12 @@ const DB = [
 {keys:["loi"],answer:"Une loi est une règle officielle 📜."},
 {keys:["climat"],answer:"Le climat décrit le temps sur long terme 🌦️."}
 ];
-
+fetch("https://raw.githubusercontent.com/falloumolina-glitch/ia-tech/main/db.json")
+  .then(r => r.json())
+  .then(data => {
+    DB = DB.concat(data);
+    console.log("DB GitHub ajoutée ✅");
+  });
 /* =========================
    CERVEAU IA
 ========================= */
