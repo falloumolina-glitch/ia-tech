@@ -20,3 +20,53 @@
     "answer": "L’IA 🤖 imite l’intelligence humaine"
   }
 ]
+[
+  {
+    "keys": ["bonjour", "salut", "coucou", "hello"],
+    "answer": "Bonjour 👋 Comment puis-je vous aider aujourd’hui ?"
+  },
+  {
+    "keys": ["bonsoir"],
+    "answer": "Bonsoir 🌙 Comment se passe votre soirée ?"
+  },
+  {
+    "keys": ["bonne nuit", "nuit"],
+    "answer": "Bonne nuit 😴 Faites de beaux rêves."
+  },
+  {
+    "keys": ["ça va", "ca va", "comment ça va", "comment ca va"],
+    "answer": "Oui ça va bien 😊 et toi ?"
+  },
+  {
+    "keys": ["je vais bien", "ça va bien"],
+    "answer": "Parfait 😊 content de l’entendre !"
+  },
+  {
+    "keys": ["merci", "merci beaucoup"],
+    "answer": "Avec plaisir 😊 je suis là pour t’aider."
+  },
+  {
+    "keys": ["au revoir", "bye", "a plus", "à plus", "a bientôt"],
+    "answer": "Au revoir 👋 à bientôt !"
+  },
+  {
+    "keys": ["qui es tu", "qui es-tu", "tu es qui"],
+    "answer": "Je suis ton assistant IA 🤖 conçu pour t’aider."
+  },
+  {
+    "keys": ["aide", "help", "aidez moi"],
+    "answer": "Bien sûr 👍 dis-moi ce que tu veux faire."
+  },
+  {
+    "keys": ["bon matin", "matin"],
+    "answer": "Bonjour ☀️ bonne journée à toi !"
+  },
+  {
+    "keys": ["bienvenue"],
+    "answer": "Bienvenue 👋 ravi de te voir ici !"
+  },
+  {
+    "keys": ["quoi de neuf", "quoi de neuf ?"],
+    "answer": "Tout va bien ici 😊 et toi ?"
+  }
+]
