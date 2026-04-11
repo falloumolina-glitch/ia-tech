@@ -1,148 +1,4 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>IA-Tech Hybrid</title>
-
-<style>
-body{
-  margin:0;
-  font-family:system-ui;
-  background:#f6f7fb;
-  height:100vh;
-  display:flex;
-  flex-direction:column;
-}
-
-header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:12px;
-  background:white;
-  border-bottom:1px solid #eee;
-}
-
-#chat{
-  flex:1;
-  padding:15px;
-  overflow-y:auto;
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-  position:relative;
-}
-
-.msg{
-  padding:10px;
-  border-radius:12px;
-  max-width:80%;
-}
-
-.user{background:#e5e7eb; align-self:flex-end;}
-.bot{background:white;border:1px solid #eee;align-self:flex-start;}
-
-#welcome{
-  position:absolute;
-  top:50%;
-  left:50%;
-  transform:translate(-50%,-50%);
-  color:#777;
-  text-align:center;
-}
-
-.bottom{
-  padding:10px;
-  background:white;
-  border-top:1px solid #eee;
-}
-
-.bar{
-  display:flex;
-  gap:8px;
-  align-items:center;
-  background:#f1f3f5;
-  padding:10px;
-  border-radius:25px;
-}
-
-input{
-  flex:1;
-  border:none;
-  outline:none;
-  background:transparent;
-}
-
-.send{
-  width:38px;
-  height:38px;
-  border-radius:50%;
-  border:none;
-  background:black;
-  color:white;
-}
-
-.menu{
-  position:absolute;
-  top:55px;
-  background:white;
-  border:1px solid #ddd;
-  display:none;
-  flex-direction:column;
-  width:200px;
-  z-index:999;
-}
-
-.menu button{
-  padding:10px;
-  border:none;
-  background:white;
-  text-align:left;
-}
-
-img{
-  max-width:160px;
-  border-radius:10px;
-}
-</style>
-</head>
-
-<body>
-
-<header>
-  <button onclick="toggle('left')">☰</button>
-  <b id="title">IA-Tech</b>
-  <button onclick="toggle('right')">⋮</button>
-</header>
-
-<div class="menu" id="left">
-  <button onclick="newChat()">Nouveau chat</button>
-  <button onclick="alert('Devoirs')">Devoirs</button>
-</div>
-
-<div class="menu" id="right">
-  <button onclick="rename()">Renommer</button>
-  <button onclick="share()">Partager</button>
-</div>
-
-<div id="chat">
-  <div id="welcome">Comment puis-je vous aider aujourd’hui ?</div>
-</div>
-
-<div class="bottom">
-  <div class="bar">
-
-    <input id="input" placeholder="Message...">
-
-    <button onclick="voice()">🎙</button>
-
-    <button class="send" onclick="send()">➤</button>
-
-  </div>
-</div>
-
-<script>
+window.onload = function () {
 
 let chat = document.getElementById("chat");
 let input = document.getElementById("input");
@@ -150,74 +6,42 @@ let title = document.getElementById("title");
 
 let memory = {lastUser:"",lastBot:"",topic:""};
 
-/* =========================
-   BASE DE CONNAISSANCES
-========================= */
-
 let DB = [
 {keys:["bonjour","salut","hello","hey"],answer:"Bonjour 👋"},
-{keys:["ça va","ca va","comment ça va"],answer:"Oui ça va bien 😊 et toi ?"},
+{keys:["ça va","ca va"],answer:"Oui ça va bien 😊"},
 {keys:["merci"],answer:"Avec plaisir 😊"},
 {keys:["qui es tu"],answer:"Je suis IA-Tech 🤖"},
-{keys:["au revoir","bye"],answer:"Au revoir 👋"},
-{keys:["heure"],answer:"Il est " + new Date().toLocaleTimeString()}
+{keys:["au revoir","bye"],answer:"Au revoir 👋"}
 ];
 
-/* =========================
-   CHARGEMENT GITHUB
-========================= */
-
+/* LOAD GITHUB SAFE */
 fetch("https://raw.githubusercontent.com/falloumolina-glitch/ia-tech/main/db.json")
-  .then(r => r.json())
-  .then(data => {
-    DB = DB.concat(data);
-    console.log("DB chargée ✅");
-  });
+.then(r => r.json())
+.then(data => {
+DB = DB.concat(data);
+console.log("DB chargée ✅");
+})
+.catch(err => {
+console.log("GitHub indisponible ⚠️");
+});
 
-/* =========================
-   NORMALISATION
-========================= */
-
-function normalize(t){
-  return t.toLowerCase();
-}
-
-/* =========================
-   CERVEAU IA
-========================= */
-
+/* IA */
 function brain(text){
 
-let t = normalize(text);
-
-memory.lastUser = text;
+let t = text.toLowerCase();
 
 for(let item of DB){
 for(let k of item.keys){
 if(t.includes(k)){
-memory.topic = k;
-memory.lastBot = item.answer;
 return item.answer;
 }
 }
 }
 
-if(t.includes("heure"))
-return "Il est " + new Date().toLocaleTimeString();
-
-if(/[0-9]/.test(t) && /[+\-*/]/.test(t)){
-try{
-return "Résultat = " + eval(text.replace(/[^0-9+\-*/().]/g,''));
-}catch(e){}
-}
-
 return "Je comprends 👍 mais je peux apprendre encore plus.";
 }
 
-/* =========================
-   CHAT
-========================= */
-
+/* CHAT */
 function add(text,type){
 document.getElementById("welcome")?.remove();
 
@@ -229,11 +53,8 @@ chat.appendChild(d);
 chat.scrollTop=chat.scrollHeight;
 }
 
-/* =========================
-   SEND
-========================= */
-
-function send(){
+/* SEND */
+window.send = function(){
 let text=input.value.trim();
 if(!text)return;
 
@@ -243,60 +64,22 @@ input.value="";
 setTimeout(()=>add(brain(text),"bot"),300);
 }
 
-/* =========================
-   NEW CHAT
-========================= */
-
-function newChat(){
+window.newChat = function(){
 chat.innerHTML=`<div id="welcome">Comment puis-je vous aider aujourd’hui ?</div>`;
-memory={lastUser:"",lastBot:"",topic:""};
 }
 
-/* =========================
-   MENU
-========================= */
-
-function toggle(id){
-let el=document.getElementById(id);
-document.querySelectorAll(".menu").forEach(m=>{
-if(m.id!==id)m.style.display="none";
-});
-el.style.display=el.style.display==="flex"?"none":"flex";
+window.toggle = function(){
+alert("menu OK");
 }
 
-/* =========================
-   VOICE
-========================= */
-
-function voice(){
-let SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-if(!SR)return alert("Micro non supporté");
-
-let r=new SR();
-r.lang="fr-FR";
-r.start();
-
-r.onresult=e=>{
-input.value=e.results[0][0].transcript;
-send();
-};
-}
-
-/* =========================
-   SHARE + RENAME
-========================= */
-
-function share(){
-navigator.clipboard.writeText(location.href);
-alert("Lien copié");
-}
-
-function rename(){
+window.rename = function(){
 let n=prompt("Nom ?");
 if(n)title.innerText=n;
 }
 
-</script>
+window.share = function(){
+navigator.clipboard.writeText(location.href);
+alert("Lien copié");
+}
 
-</body>
-</html>
+}
