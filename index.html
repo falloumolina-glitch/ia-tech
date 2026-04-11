@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>IA-Tech Pro Final</title>
+<title>IA-Tech Pro Max</title>
 
 <style>
 body{
@@ -11,9 +11,9 @@ margin:0;
 font-family:system-ui;
 background:#0f172a;
 color:white;
+height:100vh;
 display:flex;
 flex-direction:column;
-height:100vh;
 }
 
 /* HEADER */
@@ -23,6 +23,8 @@ justify-content:space-between;
 align-items:center;
 padding:10px;
 background:#020617;
+position:relative;
+z-index:10;
 }
 
 #title{font-weight:bold;}
@@ -49,6 +51,7 @@ margin:5px 0;
 padding:8px;
 border-radius:10px;
 max-width:75%;
+word-break:break-word;
 }
 
 .user{background:#06b6d4;align-self:flex-end;}
@@ -77,21 +80,17 @@ flex:1;
 padding:10px;
 border:none;
 outline:none;
-border-radius:12px;
 }
 
-/* MICRO SVG */
+/* MICRO */
 #micBtn{
 width:42px;
 height:42px;
 border-radius:50%;
-border:none;
 background:#1e293b;
 display:flex;
 align-items:center;
 justify-content:center;
-cursor:pointer;
-transition:0.2s;
 }
 
 #micBtn svg{
@@ -105,9 +104,7 @@ background:#06b6d4 !important;
 animation:pulse 1s infinite;
 }
 
-.listening svg{
-fill:white !important;
-}
+.listening svg{fill:white;}
 
 @keyframes pulse{
 0%{transform:scale(1);}
@@ -132,16 +129,21 @@ border-radius:10px;
 font-weight:bold;
 }
 
-/* MENUS */
+/* OVERLAY MENU FIX PRO */
+.overlay{
+position:fixed;
+top:0;left:0;right:0;bottom:0;
+display:none;
+z-index:99;
+}
+
 .menu{
 position:absolute;
-top:50px;
 background:#1e293b;
 border-radius:10px;
-display:none;
-flex-direction:column;
-z-index:10;
 width:220px;
+box-shadow:0 10px 30px rgba(0,0,0,0.4);
+overflow:hidden;
 }
 
 .menu div{
@@ -149,10 +151,6 @@ padding:10px;
 border-bottom:1px solid #333;
 cursor:pointer;
 }
-
-/* POSITIONS */
-#menuLeft{left:10px;}
-#menuRight{right:10px;}
 
 /* PANEL */
 .panel{
@@ -175,9 +173,27 @@ border-bottom:1px solid #333;
 cursor:pointer;
 }
 
-/* FILE */
-input[type="file"]{
+/* CAMERA LIVE */
+#cameraBox{
+position:fixed;
+top:0;left:0;right:0;bottom:0;
+background:black;
 display:none;
+flex-direction:column;
+z-index:999;
+}
+
+video{
+flex:1;
+width:100%;
+object-fit:cover;
+}
+
+#captureBtn{
+background:#06b6d4;
+padding:15px;
+text-align:center;
+font-weight:bold;
 }
 </style>
 </head>
@@ -185,9 +201,9 @@ display:none;
 <body>
 
 <header>
-<button onclick="toggleMenu('left')">☰</button>
+<button onclick="openMenu('left')">☰</button>
 <div id="title">IA-Tech Pro</div>
-<button onclick="toggleMenu('right')">⋮</button>
+<button onclick="openMenu('right')">⋮</button>
 </header>
 
 <div id="chat"></div>
@@ -198,7 +214,7 @@ display:none;
 <button id="plusBtn" onclick="openPanel()">＋</button>
 
 <div class="inputWrap">
-<input id="input" placeholder="Écris ou parle...">
+<input id="input" placeholder="Écris...">
 
 <button id="micBtn" onclick="voiceAI()">
 <svg viewBox="0 0 24 24">
@@ -209,56 +225,43 @@ display:none;
 
 </div>
 
-<button id="sendBtn" onclick="send()">➤</button>
+<button onclick="send()">➤</button>
 
 </div>
 
-<!-- ☰ MENU -->
-<div id="menuLeft" class="menu">
-<div onclick="newProject()">📁 Nouveau projet</div>
-<div onclick="homeworks()">📚 Devoirs</div>
-</div>
-
-<!-- ⋮ MENU -->
-<div id="menuRight" class="menu">
-<div onclick="addParticipants()">👥 Ajouter participants</div>
-<div onclick="shareApp()">📤 Partager</div>
-<div onclick="renameApp()">✏️ Renommer</div>
-<div onclick="addProject()">📁 Ajouter au projet</div>
-<div onclick="archiveChat()">🗄️ Archiver</div>
-<div onclick="pinMessage()">📌 Épingler</div>
-<div onclick="addHome()">🏠 Écran d’accueil</div>
-<div onclick="openSettings()">⚙️ Paramètres</div>
-<div onclick="deleteChat()">🗑️ Supprimer</div>
+<!-- MENUS OVERLAY -->
+<div id="overlay" class="overlay" onclick="closeMenus()">
+<div id="menu" class="menu"></div>
 </div>
 
 <!-- PANEL -->
 <div id="panel" class="panel">
-<div onclick="openCamera()">📷 Caméra</div>
+<div onclick="openCamera()">📷 Caméra LIVE</div>
 <div onclick="openGallery()">🖼️ Photo</div>
 <div onclick="openFile()">📁 Fichier</div>
-<div onclick="closePanel()">❌ Fermer</div>
+<div onclick="closePanel()">Fermer</div>
+</div>
+
+<!-- CAMERA LIVE -->
+<div id="cameraBox">
+<video id="video" autoplay></video>
+<div id="captureBtn" onclick="takePhoto()">Prendre photo</div>
 </div>
 
 <input type="file" id="fileImage" accept="image/*">
-<input type="file" id="fileDoc" accept="*/*">
+<input type="file" id="fileDoc">
 
 <script>
 
 let chat=document.getElementById("chat");
 let input=document.getElementById("input");
-let mic=document.getElementById("micBtn");
-let title=document.getElementById("title");
+let overlay=document.getElementById("overlay");
+let menu=document.getElementById("menu");
+let panel=document.getElementById("panel");
+let video=document.getElementById("video");
+let cameraBox=document.getElementById("cameraBox");
 
-let last="";
-
-/* IA */
-function brain(t){
-t=t.toLowerCase();
-if(t.includes("bonjour")) return "Bonjour 👋";
-if(t.includes("ça va")) return "Oui très bien 😊";
-return "Je comprends 👍";
-}
+let selected=null;
 
 /* CHAT */
 function add(text,type){
@@ -267,28 +270,27 @@ d.className="msg "+type;
 d.innerText=text;
 chat.appendChild(d);
 chat.scrollTop=chat.scrollHeight;
-if(type==="bot") last=text;
 }
 
 /* SEND */
 function send(){
-let t=input.value.trim();
-if(!t)return;
+if(!input.value.trim())return;
 
-add(t,"user");
+add(input.value,"user");
 input.value="";
 
-setTimeout(()=>add(brain(t),"bot"),300);
+setTimeout(()=>add("Je comprends 👍","bot"),300);
 }
 
 /* MICRO */
 function voiceAI(){
-let SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;
-if(!SpeechRecognition)return;
+let SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+if(!SR)return;
 
+let mic=document.getElementById("micBtn");
 mic.classList.add("listening");
 
-let rec=new SpeechRecognition();
+let rec=new SR();
 rec.lang="fr-FR";
 rec.start();
 
@@ -300,43 +302,84 @@ send();
 rec.onend=()=>mic.classList.remove("listening");
 }
 
-/* MENUS */
-function toggleMenu(type){
+/* MENUS PRO */
+function openMenu(type){
+overlay.style.display="block";
+menu.innerHTML="";
+
 if(type==="left"){
-let m=document.getElementById("menuLeft");
-m.style.display=(m.style.display==="flex")?"none":"flex";
+menu.innerHTML=`
+<div onclick="newProject()">Nouveau projet</div>
+<div onclick="homeworks()">Devoirs</div>`;
+menu.style.left="10px";
+menu.style.top="50px";
 }
+
 if(type==="right"){
-let m=document.getElementById("menuRight");
-m.style.display=(m.style.display==="flex")?"none":"flex";
+menu.innerHTML=`
+<div onclick="addParticipants()">Participants</div>
+<div onclick="shareApp()">Partager</div>
+<div onclick="renameApp()">Renommer</div>
+<div onclick="addProject()">Projet</div>
+<div onclick="archiveChat()">Archiver</div>
+<div onclick="pinMessage()">Épingler</div>
+<div onclick="addHome()">Accueil</div>
+<div onclick="openSettings()">Paramètres</div>
+<div onclick="deleteChat()">Supprimer</div>`;
+menu.style.right="10px";
+menu.style.top="50px";
 }
 }
 
-/* ☰ */
-function newProject(){chat.innerHTML="";add("📁 Nouveau projet","bot");}
-function homeworks(){add("📚 Devoirs ouverts","bot");}
+function closeMenus(){
+overlay.style.display="none";
+}
 
-/* ⋮ */
-function addParticipants(){add("👥 Ajouté","bot");}
-function shareApp(){navigator.clipboard.writeText(location.href);add("📤 Copié","bot");}
-function renameApp(){let n=prompt("Nom ?");if(n)title.innerText=n;}
-function addProject(){localStorage.setItem("p",chat.innerHTML);add("📁 Sauvé","bot");}
-function archiveChat(){localStorage.setItem("a",chat.innerHTML);chat.innerHTML="";add("🗄️ Archivé","bot");}
-function pinMessage(){add("📌 Épinglé","bot");}
-function addHome(){add("🏠 Ajout écran","bot");}
-function openSettings(){add("⚙️ Paramètres","bot");}
-function deleteChat(){chat.innerHTML="";add("🗑️ supprimé","bot");}
+/* ACTIONS */
+function newProject(){chat.innerHTML="";}
+function homeworks(){add("Devoirs","bot");}
+function addParticipants(){add("OK","bot");}
+function shareApp(){navigator.clipboard.writeText(location.href);}
+function renameApp(){let n=prompt("Nom ?");}
+function addProject(){localStorage.setItem("p",chat.innerHTML);}
+function archiveChat(){chat.innerHTML="";}
+function pinMessage(){add("Épinglé","bot");}
+function addHome(){add("Accueil","bot");}
+function openSettings(){add("Paramètres","bot");}
+function deleteChat(){chat.innerHTML="";}
 
 /* PANEL */
 function openPanel(){panel.classList.add("active");}
 function closePanel(){panel.classList.remove("active");}
 
-/* FILE */
-function openCamera(){document.getElementById("fileImage").click();}
+/* CAMERA LIVE */
+async function openCamera(){
+cameraBox.style.display="flex";
+let stream=await navigator.mediaDevices.getUserMedia({video:true});
+video.srcObject=stream;
+}
+
+function takePhoto(){
+let canvas=document.createElement("canvas");
+canvas.width=video.videoWidth;
+canvas.height=video.videoHeight;
+canvas.getContext("2d").drawImage(video,0,0);
+
+let img=document.createElement("img");
+img.src=canvas.toDataURL("image/png");
+img.style.maxWidth="200px";
+
+add("", "user");
+chat.lastChild.appendChild(img);
+
+cameraBox.style.display="none";
+}
+
+/* FILES */
 function openGallery(){document.getElementById("fileImage").click();}
 function openFile(){document.getElementById("fileDoc").click();}
 
 </script>
 
 </body>
-</html>
+  </html>
