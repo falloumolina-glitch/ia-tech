@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>IA-Tech</title>
+<title>IA-Tech Ultra</title>
 
 <style>
 body{
@@ -25,9 +25,7 @@ padding:10px;
 background:#020617;
 }
 
-#title{
-font-weight:bold;
-}
+#title{font-weight:bold;}
 
 button{
 background:none;
@@ -47,25 +45,18 @@ flex-direction:column;
 
 .msg{
 margin:5px 0;
-padding:8px 10px;
+padding:8px;
 border-radius:10px;
-max-width:70%;
+max-width:75%;
 }
 
-.user{
-background:#06b6d4;
-align-self:flex-end;
-}
+.user{background:#06b6d4;align-self:flex-end;}
+.bot{background:#1e293b;}
 
-.bot{
-background:#1e293b;
-}
-
-/* 🔵 BARRE BAS */
 #inputBox{
 display:flex;
 padding:10px;
-background:linear-gradient(90deg, #06b6d4, #3b82f6);
+background:linear-gradient(90deg,#06b6d4,#3b82f6);
 }
 
 input{
@@ -76,22 +67,16 @@ border-radius:10px;
 outline:none;
 }
 
-/* 🟠 BOUTON ENVOI ORANGE */
 #inputBox button{
-margin-left:8px;
+margin-left:6px;
 background:#f97316;
 color:white;
 padding:10px;
 border-radius:10px;
 font-weight:bold;
-box-shadow:0 2px 8px rgba(249,115,22,0.4);
 }
 
-#inputBox button:active{
-transform:scale(0.95);
-}
-
-#menu, #options{
+.menu{
 position:absolute;
 top:50px;
 right:10px;
@@ -99,9 +84,10 @@ background:#1e293b;
 border-radius:10px;
 display:none;
 flex-direction:column;
+z-index:10;
 }
 
-#menu div, #options div{
+.menu div{
 padding:10px;
 border-bottom:1px solid #333;
 cursor:pointer;
@@ -112,99 +98,160 @@ cursor:pointer;
 <body>
 
 <header>
-<button onclick="toggleMenu()">☰</button>
-<div id="title">IA-Tech</div>
+<button onclick="toggleMenu('m1')">☰</button>
+<div id="title">IA-Tech Ultra</div>
 <div>
 <button onclick="newChat()">＋</button>
-<button onclick="toggleOptions()">⋮</button>
+<button onclick="toggleMenu('m2')">⋮</button>
 </div>
 </header>
 
-<div id="chat">
-<div id="welcome">Comment puis-je vous aider aujourd’hui ?</div>
-</div>
+<div id="chat"></div>
 
 <div id="inputBox">
 <input id="input" placeholder="Écris un message...">
 <button onclick="send()">➤</button>
 </div>
 
-<div id="menu">
-<div onclick="alert('Menu')">Accueil</div>
+<!-- MENUS -->
+<div id="m1" class="menu">
+<div onclick="alert('Accueil')">Accueil</div>
 <div onclick="alert('Paramètres')">Paramètres</div>
 </div>
 
-<div id="options">
+<div id="m2" class="menu">
 <div onclick="rename()">Renommer</div>
 <div onclick="share()">Partager</div>
 </div>
 
 <script>
 
-let chat = document.getElementById("chat");
-let input = document.getElementById("input");
-let title = document.getElementById("title");
+let chat=document.getElementById("chat");
+let input=document.getElementById("input");
+let title=document.getElementById("title");
 
-function brain(text){
-text = text.toLowerCase();
+/* 🧠 MÉMOIRE UTILISATEUR */
+let memory = JSON.parse(localStorage.getItem("memory")) || {
+name:"",
+topic:""
+};
 
-if(text.includes("bonjour")) return "Bonjour 👋";
-if(text.includes("ça va")) return "Oui ça va 😊";
-if(text.includes("merci")) return "Avec plaisir 😊";
+/* 🧠 IA INTELLIGENTE */
+function brain(t){
+t=t.toLowerCase();
 
-return "Je comprends 👍";
+/* mémoire */
+if(memory.name && t.includes("je m'appelle")){
+let name=t.split("je m'appelle")[1].trim();
+memory.name=name;
+saveMemory();
+return "Enchanté "+name+" 😊";
 }
 
-function add(text,type){
-document.getElementById("welcome")?.remove();
+if(t.includes("bonjour")){
+return memory.name ? "Bonjour "+memory.name+" 👋" : "Bonjour 👋";
+}
 
+if(t.includes("ça va")){
+return "Oui très bien 😊 et toi ?";
+}
+
+if(t.includes("comment vas tu")){
+return "Je vais très bien merci 😊";
+}
+
+if(t.includes("cv")){
+return "CV = Curriculum Vitae 📄";
+}
+
+/* traduction simple */
+if(t.startsWith("traduire")){
+let word=t.replace("traduire","").trim();
+return word+" → (anglais) "+word;
+}
+
+if(t.includes("merci")){
+return "Avec plaisir 😊";
+}
+
+return "Je comprends 👍 mais j'apprends encore.";
+}
+
+/* ADD MESSAGE */
+function add(text,type){
 let d=document.createElement("div");
 d.className="msg "+type;
 d.innerText=text;
-
 chat.appendChild(d);
 chat.scrollTop=chat.scrollHeight;
+saveChat();
 }
 
+/* SEND */
 function send(){
-let text=input.value.trim();
-if(!text)return;
+let t=input.value.trim();
+if(!t)return;
 
-add(text,"user");
+add(t,"user");
 input.value="";
 
-setTimeout(()=>add(brain(text),"bot"),300);
+setTimeout(()=>add(brain(t),"bot"),400);
 }
 
+/* SAVE CHAT */
+function saveChat(){
+localStorage.setItem("chat",chat.innerHTML);
+}
+
+/* LOAD CHAT */
+window.onload=function(){
+let c=localStorage.getItem("chat");
+if(c)chat.innerHTML=c;
+}
+
+/* SAVE MEMORY */
+function saveMemory(){
+localStorage.setItem("memory",JSON.stringify(memory));
+}
+
+/* NEW CHAT */
 function newChat(){
-chat.innerHTML=`<div id="welcome">Comment puis-je vous aider aujourd’hui ?</div>`;
+chat.innerHTML="";
+localStorage.removeItem("chat");
 }
 
-function toggleMenu(){
-let m=document.getElementById("menu");
-m.style.display = m.style.display==="flex"?"none":"flex";
-}
-
-function toggleOptions(){
-let o=document.getElementById("options");
-o.style.display = o.style.display==="flex"?"none":"flex";
-}
-
-function rename(){
-let n=prompt("Nom ?");
-if(n)title.innerText=n;
-}
-
+/* SHARE */
 function share(){
 if(navigator.share){
-navigator.share({title:"IA-Tech", url:location.href});
+navigator.share({title:"IA-Tech",url:location.href});
 }else{
 navigator.clipboard.writeText(location.href);
 alert("Lien copié");
 }
 }
 
+/* RENAME */
+function rename(){
+let n=prompt("Nom ?");
+if(n)title.innerText=n;
+}
+
+/* MENUS */
+function toggleMenu(id){
+let m=document.getElementById(id);
+m.style.display=(m.style.display==="flex")?"none":"flex";
+}
+
+/* CLICK OUTSIDE */
+document.addEventListener("click",e=>{
+document.querySelectorAll(".menu").forEach(m=>{
+if(!e.target.closest("button") && !m.contains(e.target)){
+m.style.display="none";
+}
+});
+});
+
 </script>
 
 </body>
-  </html>
+</html>
