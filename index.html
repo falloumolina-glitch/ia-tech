@@ -212,6 +212,14 @@ fetch("https://raw.githubusercontent.com/falloumolina-glitch/ia-tech/main/db.jso
     DB = DB.concat(data);
     console.log("DB GitHub ajoutée ✅");
   });
+  let DB = [];
+
+fetch("https://raw.githubusercontent.com/falloumolina-glitch/ia-tech/main/db.json")
+  .then(r => r.json())
+  .then(data => {
+    DB = data;
+    console.log("DB chargée depuis GitHub ✅", DB);
+  });
 /* =========================
    CERVEAU IA
 ========================= */
