@@ -6,9 +6,9 @@
 
 <title>IA-Tech Pro Max</title>
 
+<!-- PWA -->
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png">
-
 <meta name="theme-color" content="#0f172a">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -24,6 +24,7 @@ display:flex;
 flex-direction:column;
 }
 
+/* HEADER */
 header{
 display:flex;
 justify-content:space-between;
@@ -31,8 +32,6 @@ align-items:center;
 padding:10px;
 background:#020617;
 }
-
-#title{font-weight:bold;}
 
 button{
 background:none;
@@ -42,6 +41,7 @@ font-size:18px;
 cursor:pointer;
 }
 
+/* CHAT */
 #chat{
 flex:1;
 overflow:auto;
@@ -61,6 +61,7 @@ word-break:break-word;
 .user{background:#06b6d4;align-self:flex-end;}
 .bot{background:#1e293b;}
 
+/* INPUT */
 #inputBox{
 display:flex;
 align-items:center;
@@ -83,30 +84,9 @@ flex:1;
 padding:10px;
 border:none;
 outline:none;
-color:black;
 }
 
-#micBtn{
-width:42px;
-height:42px;
-border-radius:50%;
-background:#1e293b;
-display:flex;
-align-items:center;
-justify-content:center;
-}
-
-.listening{
-background:#06b6d4 !important;
-animation:pulse 1s infinite;
-}
-
-@keyframes pulse{
-0%{transform:scale(1);}
-50%{transform:scale(1.15);}
-100%{transform:scale(1);}
-}
-
+/* BUTTONS */
 #plusBtn{
 background:white;
 color:#06b6d4;
@@ -123,6 +103,7 @@ border-radius:12px;
 font-weight:bold;
 }
 
+/* MENU */
 .overlay{
 position:fixed;
 top:0;left:0;right:0;bottom:0;
@@ -144,6 +125,7 @@ border-bottom:1px solid #333;
 cursor:pointer;
 }
 
+/* PANEL */
 .panel{
 position:fixed;
 bottom:-300px;
@@ -164,6 +146,7 @@ border-bottom:1px solid #333;
 cursor:pointer;
 }
 
+/* CAMERA */
 #cameraBox{
 position:fixed;
 top:0;left:0;right:0;bottom:0;
@@ -192,7 +175,7 @@ font-weight:bold;
 
 <header>
 <button onclick="openMenu('left')">☰</button>
-<div id="title">IA-Tech Pro Max</div>
+<div>IA-Tech Pro Max</div>
 <button onclick="openMenu('right')">⋮</button>
 </header>
 
@@ -203,17 +186,17 @@ font-weight:bold;
 
 <div class="inputWrap">
 <input id="input" placeholder="Écris...">
-
-<button id="micBtn" onclick="voiceAI()">🎤</button>
 </div>
 
 <button id="sendBtn" onclick="send()">➤</button>
 </div>
 
+<!-- MENU -->
 <div id="overlay" class="overlay" onclick="closeMenus()">
 <div id="menu" class="menu"></div>
 </div>
 
+<!-- PANEL -->
 <div id="panel" class="panel">
 <div onclick="openCamera()">📷 Caméra LIVE</div>
 <div onclick="openGallery()">🖼️ Photo</div>
@@ -221,6 +204,7 @@ font-weight:bold;
 <div onclick="closePanel()">Fermer</div>
 </div>
 
+<!-- CAMERA -->
 <div id="cameraBox">
 <video id="video" autoplay></video>
 <div id="captureBtn" onclick="takePhoto()">Prendre photo</div>
@@ -230,6 +214,7 @@ font-weight:bold;
 <input type="file" id="fileDoc" style="display:none">
 
 <script>
+
 let chat=document.getElementById("chat");
 let input=document.getElementById("input");
 let overlay=document.getElementById("overlay");
@@ -238,6 +223,7 @@ let panel=document.getElementById("panel");
 let video=document.getElementById("video");
 let cameraBox=document.getElementById("cameraBox");
 
+/* CHAT */
 function add(text,type){
 let d=document.createElement("div");
 d.className="msg "+type;
@@ -246,6 +232,7 @@ chat.appendChild(d);
 chat.scrollTop=chat.scrollHeight;
 }
 
+/* SEND */
 function send(){
 if(!input.value.trim())return;
 add(input.value,"user");
@@ -253,6 +240,7 @@ input.value="";
 setTimeout(()=>add("Je comprends 👍","bot"),300);
 }
 
+/* MENU */
 function openMenu(type){
 overlay.style.display="block";
 menu.innerHTML="";
@@ -261,6 +249,8 @@ if(type==="left"){
 menu.innerHTML=`
 <div>Nouveau projet</div>
 <div>Devoirs</div>`;
+menu.style.left="10px";
+menu.style.top="50px";
 }
 
 if(type==="right"){
@@ -268,14 +258,20 @@ menu.innerHTML=`
 <div>Partager</div>
 <div>Renommer</div>
 <div>Supprimer</div>`;
+menu.style.right="10px";
+menu.style.top="50px";
 }
 }
 
-function closeMenus(){overlay.style.display="none";}
+function closeMenus(){
+overlay.style.display="none";
+}
 
+/* PANEL */
 function openPanel(){panel.classList.add("active");}
 function closePanel(){panel.classList.remove("active");}
 
+/* CAMERA */
 async function openCamera(){
 cameraBox.style.display="flex";
 let stream=await navigator.mediaDevices.getUserMedia({video:true});
@@ -298,8 +294,10 @@ chat.lastChild.appendChild(img);
 cameraBox.style.display="none";
 }
 
+/* FILES */
 function openGallery(){document.getElementById("fileImage").click();}
 function openFile(){document.getElementById("fileDoc").click();}
+
 </script>
 
 <!-- SERVICE WORKER -->
