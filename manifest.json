@@ -4,11 +4,14 @@
   "short_name": "IA-Tech",
   "description": "IA-Tech Pro - Assistant intelligent",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
+  "display_override": ["standalone", "window-controls-overlay"],
   "background_color": "#0F172A",
   "theme_color": "#0F172A",
   "orientation": "portrait",
-  "scope": "/",
+  "lang": "fr",
+  "dir": "ltr",
 
   "icons": [
     {
@@ -29,5 +32,7 @@
       "sizes": "512x512",
       "type": "image/png"
     }
-  ]
+  ],
+
+  "categories": ["productivity", "utilities"]
 }
