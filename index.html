@@ -23,7 +23,6 @@ height:100vh;
 display:flex;
 flex-direction:column;
 }
-
 header{
 display:flex;
 justify-content:space-between;
@@ -31,7 +30,6 @@ align-items:center;
 padding:10px;
 background:#020617;
 }
-
 button{
 background:none;
 border:none;
@@ -39,7 +37,6 @@ color:white;
 font-size:18px;
 cursor:pointer;
 }
-
 #chat{
 flex:1;
 overflow:auto;
@@ -47,7 +44,6 @@ padding:10px;
 display:flex;
 flex-direction:column;
 }
-
 .msg{
 margin:5px 0;
 padding:8px;
@@ -55,10 +51,8 @@ border-radius:10px;
 max-width:75%;
 word-break:break-word;
 }
-
 .user{background:#06b6d4;align-self:flex-end;}
 .bot{background:#1e293b;}
-
 #inputBox{
 display:flex;
 align-items:center;
@@ -66,7 +60,6 @@ padding:10px;
 background:linear-gradient(90deg,#06b6d4,#3b82f6);
 gap:6px;
 }
-
 .inputWrap{
 flex:1;
 display:flex;
@@ -75,14 +68,12 @@ background:white;
 border-radius:12px;
 padding-right:5px;
 }
-
 .inputWrap input{
 flex:1;
 padding:10px;
 border:none;
 outline:none;
 }
-
 #plusBtn{
 background:white;
 color:#06b6d4;
@@ -90,7 +81,6 @@ padding:10px;
 border-radius:10px;
 font-weight:bold;
 }
-
 #sendBtn{
 background:#f97316;
 color:white;
@@ -98,14 +88,12 @@ padding:10px 14px;
 border-radius:12px;
 font-weight:bold;
 }
-
 .overlay{
 position:fixed;
 top:0;left:0;right:0;bottom:0;
 display:none;
 z-index:99;
 }
-
 .menu{
 position:absolute;
 background:#1e293b;
@@ -113,13 +101,11 @@ border-radius:10px;
 width:220px;
 overflow:hidden;
 }
-
 .menu div{
 padding:10px;
 border-bottom:1px solid #333;
 cursor:pointer;
 }
-
 .panel{
 position:fixed;
 bottom:-300px;
@@ -131,15 +117,12 @@ padding:10px;
 transition:0.3s;
 z-index:100;
 }
-
 .panel.active{bottom:0;}
-
 .panel div{
 padding:12px;
 border-bottom:1px solid #333;
 cursor:pointer;
 }
-
 #cameraBox{
 position:fixed;
 top:0;left:0;right:0;bottom:0;
@@ -148,13 +131,11 @@ display:none;
 flex-direction:column;
 z-index:999;
 }
-
 video{
 flex:1;
 width:100%;
 object-fit:cover;
 }
-
 #captureBtn{
 background:#06b6d4;
 padding:15px;
@@ -176,20 +157,16 @@ font-weight:bold;
 
 <div id="inputBox">
 <button id="plusBtn" onclick="openPanel()">＋</button>
-
 <div class="inputWrap">
 <input id="input" placeholder="Écris...">
 </div>
-
 <button id="sendBtn" onclick="send()">➤</button>
 </div>
 
-<!-- MENU -->
 <div id="overlay" class="overlay" onclick="closeMenus()">
 <div id="menu" class="menu"></div>
 </div>
 
-<!-- PANEL -->
 <div id="panel" class="panel">
 <div onclick="openCamera()">📷 Caméra LIVE</div>
 <div onclick="openGallery()">🖼️ Photo</div>
@@ -197,7 +174,6 @@ font-weight:bold;
 <div onclick="closePanel()">Fermer</div>
 </div>
 
-<!-- CAMERA -->
 <div id="cameraBox">
 <video id="video" autoplay></video>
 <div id="captureBtn" onclick="takePhoto()">Prendre photo</div>
@@ -225,12 +201,9 @@ chat.scrollTop=chat.scrollHeight;
 
 function send(){
 if(!input.value.trim())return;
-
 let message=input.value;
 add(message,"user");
 input.value="";
-
-/* IA INTÉGRÉE */
 setTimeout(()=>{
 add(botReply(message),"bot");
 },300);
@@ -239,29 +212,19 @@ add(botReply(message),"bot");
 function openMenu(type){
 overlay.style.display="block";
 menu.innerHTML="";
-
 if(type==="left"){
-menu.innerHTML=`
-<div>Nouveau projet</div>
-<div>Devoirs</div>`;
+menu.innerHTML=`<div>Nouveau projet</div><div>Devoirs</div>`;
 menu.style.left="10px";
 menu.style.top="50px";
 }
-
 if(type==="right"){
-menu.innerHTML=`
-<div>Partager</div>
-<div>Renommer</div>
-<div>Supprimer</div>`;
+menu.innerHTML=`<div>Partager</div><div>Renommer</div><div>Supprimer</div>`;
 menu.style.right="10px";
 menu.style.top="50px";
 }
 }
 
-function closeMenus(){
-overlay.style.display="none";
-}
-
+function closeMenus(){overlay.style.display="none";}
 function openPanel(){panel.classList.add("active");}
 function closePanel(){panel.classList.remove("active");}
 
@@ -276,14 +239,11 @@ let canvas=document.createElement("canvas");
 canvas.width=video.videoWidth;
 canvas.height=video.videoHeight;
 canvas.getContext("2d").drawImage(video,0,0);
-
 let img=document.createElement("img");
 img.src=canvas.toDataURL("image/png");
 img.style.maxWidth="200px";
-
 add("", "user");
 chat.lastChild.appendChild(img);
-
 cameraBox.style.display="none";
 }
 
@@ -291,15 +251,17 @@ function openGallery(){document.getElementById("fileImage").click();}
 function openFile(){document.getElementById("fileDoc").click();}
 </script>
 
-<!-- AI BRAIN -->
+<!-- IA -->
 <script src="ai.js"></script>
 
-<!-- SERVICE WORKER -->
+<!-- SERVICE WORKER FIX -->
 <script>
 if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("sw.js");
+  navigator.serviceWorker.register("sw.js").then(reg => {
+    reg.update(); // force update
+  });
 }
 </script>
 
 </body>
-  </html>
+                                      </html>
