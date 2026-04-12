@@ -7,7 +7,7 @@
 <title>IA-Tech Pro Max</title>
 
 <link rel="manifest" href="manifest.json">
-<link rel="icon" href="icon.png">
+<link rel="icon" href="icon-192.png">
 
 <meta name="theme-color" content="#0f172a">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -83,6 +83,7 @@ flex:1;
 padding:10px;
 border:none;
 outline:none;
+color:black;
 }
 
 #micBtn{
@@ -95,18 +96,10 @@ align-items:center;
 justify-content:center;
 }
 
-#micBtn svg{
-width:18px;
-height:18px;
-fill:#94a3b8;
-}
-
 .listening{
 background:#06b6d4 !important;
 animation:pulse 1s infinite;
 }
-
-.listening svg{fill:white;}
 
 @keyframes pulse{
 0%{transform:scale(1);}
@@ -211,13 +204,7 @@ font-weight:bold;
 <div class="inputWrap">
 <input id="input" placeholder="Écris...">
 
-<button id="micBtn" onclick="voiceAI()">
-<svg viewBox="0 0 24 24">
-<path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
-<path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
-</svg>
-</button>
-
+<button id="micBtn" onclick="voiceAI()">🎤</button>
 </div>
 
 <button id="sendBtn" onclick="send()">➤</button>
@@ -266,25 +253,6 @@ input.value="";
 setTimeout(()=>add("Je comprends 👍","bot"),300);
 }
 
-function voiceAI(){
-let SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-if(!SR)return;
-
-let mic=document.getElementById("micBtn");
-mic.classList.add("listening");
-
-let rec=new SR();
-rec.lang="fr-FR";
-rec.start();
-
-rec.onresult=(e)=>{
-input.value=e.results[0][0].transcript;
-send();
-};
-
-rec.onend=()=>mic.classList.remove("listening");
-}
-
 function openMenu(type){
 overlay.style.display="block";
 menu.innerHTML="";
@@ -299,7 +267,6 @@ if(type==="right"){
 menu.innerHTML=`
 <div>Partager</div>
 <div>Renommer</div>
-<div>Projet</div>
 <div>Supprimer</div>`;
 }
 }
@@ -335,7 +302,7 @@ function openGallery(){document.getElementById("fileImage").click();}
 function openFile(){document.getElementById("fileDoc").click();}
 </script>
 
-<!-- ✅ SERVICE WORKER -->
+<!-- SERVICE WORKER -->
 <script>
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("sw.js");
@@ -343,4 +310,4 @@ if ("serviceWorker" in navigator) {
 </script>
 
 </body>
-</html>
+  </html>
