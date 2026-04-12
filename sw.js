@@ -1,35 +1,38 @@
-const CACHE_NAME = "ia-tech-cache-v1";
-const OFFLINE_PAGE = "index.html";
+const CACHE = "ia-tech-cache-v3";
 
+const FILES = [
+  "/",
+  "/index.html",
+  "/manifest.json",
+  "/icon-192.png",
+  "/icon-512.png"
+];
+
+// INSTALL
 self.addEventListener("install", (event) => {
+  self.skipWaiting();
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll([
-        "/",
-        "/index.html",
-        "/manifest.json",
-        "/icon-192.png",
-        "/icon-512.png"
-      ]);
+    caches.open(CACHE).then((cache) => cache.addAll(FILES))
+  );
+});
+
+// ACTIVATE
+self.addEventListener("activate", (event) => {
+  event.waitUntil(
+    caches.keys().then((keys) =>
+      Promise.all(keys.map((key) => {
+        if (key !== CACHE) return caches.delete(key);
+      }))
+    )
+  );
+  self.clients.claim();
+});
+
+// FETCH (IMPORTANT)
+self.addEventListener("fetch", (event) => {
+  event.respondWith(
+    caches.match(event.request).then((res) => {
+      return res || fetch(event.request).catch(() => caches.match("/index.html"));
     })
   );
-  self.skipWaiting();
-});
-
-self.addEventListener("activate", (event) => {
-  event.waitUntil(self.clients.claim());
-});
-
-self.addEventListener("fetch", (event) => {
-  if (event.request.mode === "navigate") {
-    event.respondWith(
-      fetch(event.request).catch(() => caches.match("/index.html"))
-    );
-  } else {
-    event.respondWith(
-      caches.match(event.request).then((response) => {
-        return response || fetch(event.request);
-      })
-    );
-  }
 });
