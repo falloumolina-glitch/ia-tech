@@ -6,6 +6,7 @@
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
+  "display_override": ["standalone"],
   "background_color": "#0F172A",
   "theme_color": "#0F172A",
   "orientation": "portrait",
@@ -22,6 +23,31 @@
       "src": "icon-512.png",
       "sizes": "512x512",
       "type": "image/png"
+    }
+  ],
+
+  "screenshots": [
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+
+  "categories": ["productivity", "utilities"],
+
+  "shortcuts": [
+    {
+      "name": "Ouvrir IA-Tech",
+      "short_name": "Chat",
+      "url": "/",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
     }
   ]
 }
