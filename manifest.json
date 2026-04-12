@@ -6,7 +6,6 @@
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
-  "display_override": ["standalone", "window-controls-overlay"],
   "background_color": "#0F172A",
   "theme_color": "#0F172A",
   "orientation": "portrait",
@@ -40,7 +39,6 @@
     {
       "name": "Ouvrir IA-Tech",
       "short_name": "Chat",
-      "description": "Accéder au chat",
       "url": "/",
       "icons": [
         {
@@ -60,5 +58,5 @@
     }
   },
 
-  "iarc_rating_id": "e"
+  "display_override": ["standalone", "window-controls-overlay"]
 }
