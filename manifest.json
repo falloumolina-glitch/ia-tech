@@ -1,17 +1,23 @@
 {
-  "id": "ia-tech-pro-max",
+  "id": "/ia-tech/",
   "name": "IA-Tech Pro Max",
   "short_name": "IA-Tech",
-  "description": "IA-Tech Pro - Assistant intelligent",
-  "start_url": "/",
-  "scope": "/",
+  "description": "Application IA intelligente pour discuter, apprendre et poser des questions",
+
+  "start_url": "/ia-tech/",
+  "scope": "/ia-tech/",
+
   "display": "standalone",
-  "display_override": ["standalone"],
-  "background_color": "#0F172A",
-  "theme_color": "#0F172A",
+  "display_override": ["standalone", "window-controls-overlay"],
+
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+
   "orientation": "portrait",
   "lang": "fr",
   "dir": "ltr",
+
+  "categories": ["productivity", "education", "utilities"],
 
   "icons": [
     {
@@ -34,13 +40,11 @@
     }
   ],
 
-  "categories": ["productivity", "utilities"],
-
   "shortcuts": [
     {
       "name": "Ouvrir IA-Tech",
       "short_name": "Chat",
-      "url": "/",
+      "url": "/ia-tech/",
       "icons": [
         {
           "src": "icon-192.png",
@@ -49,5 +53,13 @@
         }
       ]
     }
-  ]
+  ],
+
+  "share_target": {
+    "action": "/ia-tech/",
+    "method": "GET",
+    "params": {
+      "text": "text"
+    }
+  }
 }
