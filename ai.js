@@ -26,6 +26,10 @@ async function send(){
       body: JSON.stringify({ message: message })
     });
 
+    if(!res.ok){
+      throw new Error("API error");
+    }
+
     let data = await res.json();
 
     if(data && data.reply){
@@ -36,6 +40,6 @@ async function send(){
 
   }catch(e){
     add("Erreur de connexion à l'IA ❌", "bot");
-    console.log(e);
+    console.log("Error:", e);
   }
       }
