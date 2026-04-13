@@ -28,9 +28,13 @@ async function send(){
 
     let data = await res.json();
 
-    add(data.reply,"bot");
+    if(data && data.reply){
+      add(data.reply,"bot");
+    }else{
+      add("Réponse vide de l'IA ❌","bot");
+    }
 
   }catch(e){
     add("Erreur de connexion à l'IA ❌","bot");
   }
-}
+      }
