@@ -31,10 +31,10 @@ async function send(){
     if(data && data.reply){
       add(data.reply,"bot");
     }else{
-      add("Réponse vide de l'IA ❌","bot");
+      add("Réponse vide ❌","bot");
     }
 
   }catch(e){
     add("Erreur de connexion à l'IA ❌","bot");
   }
-      }
+        }
