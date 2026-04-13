@@ -14,11 +14,11 @@ async function send(){
 
   if(!message) return;
 
-  add(message,"user");
+  add(message, "user");
   input.value = "";
 
   try{
-    let res = await fetch("https://ai-chat-api--falloumolina.replit.app/api/chat", {
+    let res = await fetch("https://c4d59d8c-9f9f-46e1-b4b1-3dde5bb835df-00-3858ng3xbepqm.worf.replit.dev/api/chat", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -29,12 +29,13 @@ async function send(){
     let data = await res.json();
 
     if(data && data.reply){
-      add(data.reply,"bot");
+      add(data.reply, "bot");
     }else{
-      add("Réponse vide ❌","bot");
+      add("Réponse vide ❌", "bot");
     }
 
   }catch(e){
-    add("Erreur de connexion à l'IA ❌","bot");
+    add("Erreur de connexion à l'IA ❌", "bot");
+    console.log(e);
   }
         }
