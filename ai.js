@@ -38,4 +38,4 @@ async function send(){
     add("Erreur de connexion à l'IA ❌", "bot");
     console.log(e);
   }
-        }
+      }
